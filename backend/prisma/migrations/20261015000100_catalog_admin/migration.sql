@@ -1,0 +1,2 @@
+ALTER TABLE "TourCategory" ADD COLUMN "revision" INTEGER NOT NULL DEFAULT 1 CHECK ("revision" > 0);
+ALTER TABLE "Tour" ADD COLUMN "revision" INTEGER NOT NULL DEFAULT 1 CHECK ("revision" > 0);

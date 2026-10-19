@@ -9,7 +9,7 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./server/database/init.sql:/docker-entrypoint-initdb.d/01-vector.sql:ro
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/01-vector.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
@@ -17,11 +17,23 @@ services:
       retries: 5
     restart: unless-stopped
 
+  migrate:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: migrate
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+    depends_on:
+      database:
+        condition: service_healthy
+
   server:
     build:
       context: .
-      dockerfile: server/Dockerfile
-    env_file: ./server/.env
+      dockerfile: backend/Dockerfile
+    env_file: ./backend/.env
     environment:
       NODE_ENV: production
       PORT: 4000

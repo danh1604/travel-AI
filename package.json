@@ -3,21 +3,58 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "client",
-    "server",
+    "frontend",
+    "backend",
     "ai-services"
   ],
   "engines": {
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "concurrently -k -n client,server \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "npm run dev --workspace @pickyourway/client",
-    "dev:server": "npm run build --workspace @pickyourway/ai-services && npm run dev --workspace @pickyourway/server",
-    "build": "npm run build:server && npm run build --workspace @pickyourway/client",
-    "build:server": "npm run build --workspace @pickyourway/ai-services && npm run build --workspace @pickyourway/server",
+    "test:reviews": "npm run test:reviews --workspace @pickyourway/server",
+    "dev": "concurrently -k -n frontend,backend \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm run dev --workspace @pickyourway/client",
+    "dev:backend": "npm run build --workspace @pickyourway/ai-services && npm run dev --workspace @pickyourway/server",
+    "dev:client": "npm run dev:frontend",
+    "dev:server": "npm run dev:backend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "npm run build --workspace @pickyourway/client",
+    "build:backend": "npm run build --workspace @pickyourway/ai-services && npm run build --workspace @pickyourway/server",
+    "build:server": "npm run build:backend",
     "typecheck": "npm run build --workspace @pickyourway/ai-services && npm run typecheck --workspaces",
-    "lint": "npm run lint --workspace @pickyourway/client"
+    "lint": "npm run lint --workspace @pickyourway/client",
+    "db:generate": "npm run db:generate --workspace @pickyourway/server",
+    "db:validate": "npm run db:validate --workspace @pickyourway/server",
+    "db:migrate": "npm run db:migrate --workspace @pickyourway/server --",
+    "db:deploy": "npm run db:deploy --workspace @pickyourway/server",
+    "db:status": "npm run db:status --workspace @pickyourway/server",
+    "db:seed": "npm run db:seed --workspace @pickyourway/server",
+    "db:studio": "npm run db:studio --workspace @pickyourway/server",
+    "test:database": "npm run test:database --workspace @pickyourway/server",
+    "db:import:mongo": "npm run db:import:mongo --workspace @pickyourway/server --",
+    "db:map:legacy": "npm run db:map:legacy --workspace @pickyourway/server --",
+    "test:legacy": "npm run test:legacy --workspace @pickyourway/server",
+    "catalog:snapshot": "npm run catalog:snapshot --workspace @pickyourway/server",
+    "test:explore": "npm run test:explore --workspace @pickyourway/server",
+    "test:auth": "npm run test:auth --workspace @pickyourway/server",
+    "auth:admin": "npm run auth:admin --workspace @pickyourway/server --",
+    "test:ui": "npm run test:ui --workspace @pickyourway/server",
+    "test:admin": "npm run test:admin --workspace @pickyourway/server",
+    "test:planner": "npm run test:planner --workspace @pickyourway/server",
+    "test:trips": "npm run test:trips --workspace @pickyourway/server",
+    "test:guides": "npm run test:guides --workspace @pickyourway/server",
+    "test:rag": "npm run test:rag --workspace @pickyourway/server"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    },
+    "prisma": {
+      "mysql2": "3.24.5"
+    },
+    "concurrently": {
+      "shell-quote": "1.12.0"
+    }
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

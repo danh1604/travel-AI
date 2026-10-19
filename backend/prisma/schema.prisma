@@ -1,0 +1,568 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TravelStyle {
+  RELAXED
+  BALANCED
+  ACTIVE
+}
+
+enum DataSource {
+  DEMO
+  INTERNAL
+  EXTERNAL_API
+}
+
+enum CostUnit {
+  PER_PERSON
+  PER_PERSON_ROUND_TRIP
+  PER_ROOM_NIGHT
+  PER_VEHICLE_TRIP
+  PER_GROUP
+}
+
+enum TripStatus {
+  DRAFT
+  PLANNING
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
+
+enum ActivityType {
+  HOTEL
+  RESTAURANT
+  ATTRACTION
+  TRANSPORTATION
+  FREE_TIME
+}
+
+enum TransportMode {
+  FLIGHT
+  TRAIN
+  BUS
+  CAR
+  TAXI
+  MOTORBIKE
+  BOAT
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  TOOL
+}
+
+model User {
+  tourReviews TourReview[]
+  savedPlans SavedPlan[]
+  roleRevision Int @default(1)
+  roleChangesMade AccountRoleChange[] @relation("RoleChangeActor")
+  roleChangesReceived AccountRoleChange[] @relation("RoleChangeTarget")
+  id           String @id @default(uuid()) @db.Uuid
+  email        String @unique
+  name         String
+  passwordHash String?
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+  preference   UserPreference?
+  trips        Trip[]
+  sessions     AuthSession[]
+}
+
+// Catalog can be served from a local snapshot; existence is checked through the catalog loader.
+model TourReview {
+  id        String @id @db.Uuid
+  tourId    String @db.Uuid
+  userId    String @db.Uuid
+  rating    Int
+  comment   String @default("")
+  hidden    Boolean @default(false)
+  revision  Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @db.Timestamptz(3)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([tourId, userId])
+  @@index([tourId, hidden, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc), id])
+}
+
+// Immutable Planner snapshot, independent of the normalized service-booking Trip model.
+model SavedPlan {
+  title     String?
+  notes     String @default("")
+  revision  Int @default(1)
+  updatedAt DateTime @default(now()) @db.Timestamptz(3)
+  id        String @id @db.Uuid
+  ownerId   String @db.Uuid
+  snapshot  Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  savedAt   DateTime? @db.Timestamptz(3)
+  owner     User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, savedAt(sort: Desc), id])
+}
+
+model KnowledgeChunk {
+  id           String @id
+  title        String
+  body         String
+  url          String
+  kind         String
+  destinations Json @default("[]")
+  fingerprint  String
+  embedding    Unsupported("vector(384)")
+  updatedAt    DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model AuthSession {
+  id        String @id @default(uuid()) @db.Uuid
+  userId    String @db.Uuid
+  tokenHash String @unique @db.Char(64)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AccountRoleChange {
+  id         String @id @db.Uuid
+  actorId    String @db.Uuid
+  targetId   String @db.Uuid
+  beforeRole UserRole
+  afterRole  UserRole
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  actor      User @relation("RoleChangeActor", fields: [actorId], references: [id], onDelete: Restrict)
+  target     User @relation("RoleChangeTarget", fields: [targetId], references: [id], onDelete: Restrict)
+  @@index([targetId, createdAt])
+}
+
+model UserPreference {
+  id                 String @id @default(uuid()) @db.Uuid
+  userId             String @unique @db.Uuid
+  travelStyle        TravelStyle @default(BALANCED)
+  interests          String[] @default([])
+  foodRestrictions   String[] @default([])
+  hotelPreferences   String[] @default([])
+  preferredTransport TransportMode[] @default([])
+  updatedAt          DateTime @updatedAt @db.Timestamptz(3)
+  user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Destination {
+  id              String @id @default(uuid()) @db.Uuid
+  slug            String @unique
+  name            String
+  province        String
+  countryCode     String @default("VN") @db.Char(2)
+  description     String
+  latitude        Decimal @db.Decimal(9, 6)
+  longitude       Decimal @db.Decimal(9, 6)
+  tags            String[] @default([])
+  source          DataSource @default(INTERNAL)
+  sourceUrl       String?
+  lastVerifiedAt  DateTime? @db.Timestamptz(3)
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  hotels          Hotel[]
+  restaurants     Restaurant[]
+  attractions     Attraction[]
+  transportations Transportation[]
+  trips           Trip[]
+  tours           Tour[]
+  catalogPlaces   CatalogPlace[]
+  catalogServices CatalogService[]
+}
+
+model Hotel {
+  id             String @id @default(uuid()) @db.Uuid
+  destinationId  String @db.Uuid
+  slug           String @unique
+  name           String
+  description    String
+  address        String
+  latitude       Decimal? @db.Decimal(9, 6)
+  longitude      Decimal? @db.Decimal(9, 6)
+  priceVnd       Decimal @db.Decimal(14, 0)
+  costUnit       CostUnit @default(PER_ROOM_NIGHT)
+  roomCapacity   Int @default(2)
+  tags           String[] @default([])
+  source         DataSource @default(INTERNAL)
+  sourceUrl      String?
+  lastVerifiedAt DateTime? @db.Timestamptz(3)
+  isActive       Boolean @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  activities     TripActivity[]
+  @@index([destinationId, isActive, priceVnd])
+}
+
+model Restaurant {
+  id             String @id @default(uuid()) @db.Uuid
+  destinationId  String @db.Uuid
+  slug           String @unique
+  name           String
+  description    String
+  address        String
+  latitude       Decimal? @db.Decimal(9, 6)
+  longitude      Decimal? @db.Decimal(9, 6)
+  priceVnd       Decimal @db.Decimal(14, 0)
+  costUnit       CostUnit @default(PER_PERSON)
+  tags           String[] @default([])
+  foodOptions    String[] @default([])
+  source         DataSource @default(INTERNAL)
+  sourceUrl      String?
+  lastVerifiedAt DateTime? @db.Timestamptz(3)
+  isActive       Boolean @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  activities     TripActivity[]
+  @@index([destinationId, isActive, priceVnd])
+}
+
+model Attraction {
+  id              String @id @default(uuid()) @db.Uuid
+  destinationId   String @db.Uuid
+  slug            String @unique
+  name            String
+  description     String
+  address         String
+  latitude        Decimal? @db.Decimal(9, 6)
+  longitude       Decimal? @db.Decimal(9, 6)
+  priceVnd        Decimal @db.Decimal(14, 0)
+  costUnit        CostUnit @default(PER_PERSON)
+  durationMinutes Int
+  isIndoor        Boolean @default(false)
+  tags            String[] @default([])
+  source          DataSource @default(INTERNAL)
+  sourceUrl       String?
+  lastVerifiedAt  DateTime? @db.Timestamptz(3)
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  destination     Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  activities      TripActivity[]
+  @@index([destinationId, isActive, priceVnd])
+}
+
+model Transportation {
+  id              String @id @default(uuid()) @db.Uuid
+  destinationId   String @db.Uuid
+  slug            String @unique
+  name            String
+  departure       String
+  description     String
+  mode            TransportMode
+  priceVnd        Decimal @db.Decimal(14, 0)
+  costUnit        CostUnit
+  capacity        Int @default(1)
+  durationMinutes Int
+  source          DataSource @default(INTERNAL)
+  sourceUrl       String?
+  lastVerifiedAt  DateTime? @db.Timestamptz(3)
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  destination     Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  activities      TripActivity[]
+  @@index([destinationId, departure, mode, priceVnd])
+}
+
+model Trip {
+  id                String @id @default(uuid()) @db.Uuid
+  ownerId           String @db.Uuid
+  destinationId     String @db.Uuid
+  title             String
+  departureLocation String
+  startDate         DateTime @db.Date
+  endDate           DateTime @db.Date
+  people            Int
+  totalBudgetVnd    Decimal @db.Decimal(14, 0)
+  travelStyle       TravelStyle @default(BALANCED)
+  interests         String[] @default([])
+  status            TripStatus @default(DRAFT)
+  shareToken        String? @unique
+  isPublic          Boolean @default(false)
+  version           Int @default(1)
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
+  owner             User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  destination       Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  days              TripDay[]
+  conversations     Conversation[]
+  @@index([ownerId, status, startDate])
+}
+
+model TripDay {
+  id         String @id @default(uuid()) @db.Uuid
+  tripId     String @db.Uuid
+  dayNumber  Int
+  date       DateTime @db.Date
+  notes      String?
+  trip       Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  activities TripActivity[]
+  @@unique([tripId, dayNumber])
+  @@unique([tripId, date])
+}
+
+model TripActivity {
+  id              String @id @default(uuid()) @db.Uuid
+  tripDayId       String @db.Uuid
+  position        Int
+  type            ActivityType
+  hotelId         String? @db.Uuid
+  restaurantId    String? @db.Uuid
+  attractionId    String? @db.Uuid
+  transportationId String? @db.Uuid
+  name            String
+  startTime       DateTime @db.Time(0)
+  endTime         DateTime @db.Time(0)
+  unitPriceVnd    Decimal @db.Decimal(14, 0)
+  costUnit        CostUnit
+  quantity        Decimal @db.Decimal(10, 2)
+  estimatedCostVnd Decimal @db.Decimal(14, 0)
+  source          DataSource
+  notes           String?
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  tripDay         TripDay @relation(fields: [tripDayId], references: [id], onDelete: Cascade)
+  hotel           Hotel? @relation(fields: [hotelId], references: [id], onDelete: Restrict)
+  restaurant      Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  attraction      Attraction? @relation(fields: [attractionId], references: [id], onDelete: Restrict)
+  transportation  Transportation? @relation(fields: [transportationId], references: [id], onDelete: Restrict)
+  @@unique([tripDayId, position])
+  @@index([hotelId])
+  @@index([restaurantId])
+  @@index([attractionId])
+  @@index([transportationId])
+}
+
+model Conversation {
+  id        String @id @default(uuid()) @db.Uuid
+  tripId    String @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  trip      Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  messages  ConversationMessage[]
+  @@index([tripId])
+}
+
+model ConversationMessage {
+  id             String @id @default(uuid()) @db.Uuid
+  conversationId String @db.Uuid
+  role           MessageRole
+  content        String
+  toolCallId     String?
+  structuredData Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  @@index([conversationId, createdAt])
+}
+
+// Private staging area. MongoDB documents are preserved with Extended JSON.
+// These records are not public catalog items and must not be exposed to the AI/frontend.
+model LegacyDocument {
+  id             String @id @default(uuid()) @db.Uuid
+  sourceDatabase String
+  collection     String
+  sourceId       String
+  payload        Json
+  importedAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  @@unique([sourceDatabase, collection, sourceId])
+  @@index([sourceDatabase, collection])
+}
+
+// Catalog imported from the old tour website; separate from personal planner trips.
+model TourCategory {
+  revision       Int @default(1)
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  name           String
+  slug           String
+  status         String
+  tours          Tour[]
+  @@unique([sourceDatabase, sourceId])
+}
+
+model Tour {
+  revision         Int @default(1)
+  id               String @id @db.Uuid
+  sourceDatabase   String
+  sourceId         String
+  name             String
+  slug             String
+  status           String
+  departureLocation String
+  durationDays     Int?
+  legacyHotelId    String?
+  categoryId       String @db.Uuid
+  destinationId    String? @db.Uuid
+  needsReview      Boolean @default(true)
+  sourceUpdatedAt  DateTime? @db.Timestamptz(3)
+  category         TourCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  destination      Destination? @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  departures       TourDeparture[]
+  days             TourDay[]
+  images           CatalogImage[]
+  sections         TourSection[]
+  discounts        TourDiscount[]
+  @@unique([sourceDatabase, sourceId])
+  @@index([status, destinationId])
+}
+
+model CatalogPlace {
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  name           String
+  content        String
+  destinationId  String? @db.Uuid
+  needsReview    Boolean @default(true)
+  destination    Destination? @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  stops          TourStop[]
+  images         CatalogImage[]
+  @@unique([sourceDatabase, sourceId])
+}
+
+model CatalogService {
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  name           String
+  type           String
+  unit           String
+  basePriceVnd   Decimal @db.Decimal(65, 30)
+  description    String
+  status         String
+  destinationId  String? @db.Uuid
+  needsReview    Boolean @default(true)
+  sourceUpdatedAt DateTime? @db.Timestamptz(3)
+  destination    Destination? @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  departures     DepartureService[]
+  @@unique([sourceDatabase, sourceId])
+  @@index([type, status])
+}
+
+model TourDeparture {
+  priceConfirmed Boolean @default(false)
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  tourId         String @db.Uuid
+  startsAt       DateTime @db.Timestamptz(3)
+  endsAt         DateTime @db.Timestamptz(3)
+  basePriceVnd   Decimal @db.Decimal(65, 30)
+  salePriceVnd   Decimal @db.Decimal(65, 30)
+  minPeople      Int
+  maxPeople      Int
+  bookedPeople   Int
+  status         String
+  needsReview    Boolean @default(true)
+  sourceUpdatedAt DateTime? @db.Timestamptz(3)
+  tour           Tour @relation(fields: [tourId], references: [id], onDelete: Restrict)
+  services       DepartureService[]
+  @@unique([sourceDatabase, sourceId])
+  @@index([tourId, startsAt, status])
+}
+
+model DepartureService {
+  id             String @id @db.Uuid
+  departureId    String @db.Uuid
+  serviceId      String @db.Uuid
+  position       Int
+  unitPriceVnd   Decimal @db.Decimal(65, 30)
+  quantity       Decimal @db.Decimal(65, 30)
+  note           String?
+  departure      TourDeparture @relation(fields: [departureId], references: [id], onDelete: Cascade)
+  service        CatalogService @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  @@unique([departureId, position])
+}
+
+model TourDay {
+  isHidden       Boolean @default(false)
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  tourId         String @db.Uuid
+  dayNumber      Int
+  title          String
+  mealNote       String?
+  tour           Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  stops          TourStop[]
+  @@unique([sourceDatabase, sourceId])
+  @@index([tourId, dayNumber])
+}
+
+model TourStop {
+  isHidden       Boolean @default(false)
+  placeLabel     String?
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  dayId          String @db.Uuid
+  placeId        String? @db.Uuid
+  type           String
+  title          String
+  content        String
+  position       Int
+  day            TourDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  place          CatalogPlace? @relation(fields: [placeId], references: [id], onDelete: Restrict)
+  @@unique([sourceDatabase, sourceId])
+  @@index([dayId, position])
+}
+
+model CatalogImage {
+  isHidden       Boolean @default(false)
+  position       Int @default(0)
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  sourceCollection String
+  url            String
+  storagePublicId String?
+  tourId         String? @db.Uuid
+  placeId        String? @db.Uuid
+  tour           Tour? @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  place          CatalogPlace? @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  @@unique([sourceDatabase, sourceCollection, sourceId])
+  @@index([tourId, position])
+}
+
+model TourSection {
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  tourId         String @db.Uuid
+  title          String
+  content        String
+  tour           Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  @@unique([sourceDatabase, sourceId])
+}
+
+model TourDiscount {
+  id             String @id @db.Uuid
+  sourceDatabase String
+  sourceId       String
+  tourId         String @db.Uuid
+  percentage     Decimal @db.Decimal(5, 2)
+  needsReview    Boolean @default(true)
+  tour           Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  @@unique([sourceDatabase, sourceId])
+}
