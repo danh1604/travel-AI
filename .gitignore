@@ -17,3 +17,6 @@ backend/data/*.snapshot.json
 backend/data/auth/
 backend/data/catalog.admin.json
 backend/data/catalog.admin.json.*
+
+.vercel
+.env*

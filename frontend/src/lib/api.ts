@@ -1,5 +1,5 @@
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+  process.env.NEXT_PUBLIC_API_URL?.trim() || (process.env.NODE_ENV === "production" ? "" : "http://localhost:4000/api");
 
 export class ApiError extends Error {
   constructor(
@@ -14,6 +14,7 @@ export async function apiFetch<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
+  if (!API_URL) throw new ApiError(503, "backend_unconfigured");
   const timeout = AbortSignal.timeout(10_000);
   const signal = options?.signal
     ? AbortSignal.any([options.signal, timeout])

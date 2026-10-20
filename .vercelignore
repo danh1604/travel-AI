@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.cache
+.git
+**/.next
+**/dist
+.env
+.env.*
+**/.env
+**/.env.*
+backend/data
+backend/reports
+backend/src/generated
+*.tsbuildinfo
+**/*.tsbuildinfo

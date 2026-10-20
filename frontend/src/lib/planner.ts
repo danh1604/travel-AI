@@ -28,6 +28,7 @@ export type ReadyPlan = {
 };
 export type PlannerResult = ReadyPlan | { status: "needs_input" | "no_data"; constraints: PlannerConstraints; questions: string[]; packageQuotes?: TourSuggestion[] };
 export async function generatePlan(input: PlannerRequest, signal: AbortSignal, onProgress?: (stage: PlannerStage) => void): Promise<PlannerResult> {
+  if (!API_URL) throw new ApiError(503, "backend_unconfigured");
   // Planner has a separate timeout: ordinary catalog requests should stay fast.
   const response = await fetch(`${API_URL.replace(/\/$/, "")}/planner/generate`, {
     method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
@@ -41,6 +42,7 @@ export async function generatePlan(input: PlannerRequest, signal: AbortSignal, o
 export function plannerError(error: unknown) {
   if (error instanceof ApiError) {
     const messages: Record<string, string> = {
+      backend_unconfigured: "Giao diện đã sẵn sàng. Tính năng này sẽ hoạt động khi máy chủ API được kết nối.",
       login_required: "Bạn cần đăng nhập để tạo lịch trình.",
       ai_unconfigured: "Tính năng tạo lịch AI hiện chưa sẵn sàng. Bạn có thể xem các tour ở mục Khám phá và quay lại sau.",
       ai_unavailable: "Trợ lý AI đang tạm gián đoạn. Thông tin bạn nhập vẫn được giữ, hãy thử tạo lại sau ít phút nhé.",

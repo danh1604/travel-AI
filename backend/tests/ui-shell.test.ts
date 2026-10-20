@@ -1,5 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { formatTripDate, groupDayActivities, departureComparison } from "../../frontend/src/lib/itinerary-presentation.ts";
 import type { ReadyPlan, TourSuggestion } from "../../frontend/src/lib/planner.ts";
 import { adminAccess, adminReturnPath } from "../../frontend/src/lib/admin-access.ts";
@@ -16,6 +18,23 @@ const options = {
   limit: "3",
   tourId: "abc",
 };
+
+test("frontend-only production never calls a visitor's localhost or a relative API", () => {
+  const result = spawnSync(process.execPath, ["--import", "tsx", "--input-type=module", "-e", `
+    import assert from 'node:assert/strict';
+    const load = async (path) => { const module = await import(path); return module.default ?? module; };
+    const { API_URL, apiFetch } = await load('./src/lib/api.ts');
+    const { generatePlan } = await load('./src/lib/planner.ts');
+    const { askAssistant } = await load('./src/lib/assistant.ts');
+    let calls = 0; globalThis.fetch = async () => { calls++; throw Error('Network must not be used'); };
+    assert.equal(API_URL, '');
+    await assert.rejects(apiFetch('health'), { code: 'backend_unconfigured' });
+    await assert.rejects(generatePlan({prompt:'test'}, new AbortController().signal), { code: 'backend_unconfigured' });
+    await assert.rejects(askAssistant('hello', [], new AbortController().signal), { code: 'backend_unconfigured' });
+    assert.equal(calls, 0);
+  `], { cwd: fileURLToPath(new URL("../../frontend/", import.meta.url)), env: { ...process.env, NODE_ENV: "production", NEXT_PUBLIC_API_URL: "" }, encoding: "utf8", timeout: 20000 });
+  assert.equal(result.status, 0, result.stderr || result.error?.message);
+});
 
 test("admin pages remain hidden until the current route has a verified admin session", () => {
   const state = { loading: false, error: false, role: "ADMIN", checked: "/admin/tours", pathname: "/admin/tours" };

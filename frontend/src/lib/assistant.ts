@@ -5,6 +5,7 @@ export type AssistantReply = {
   planner: { destination: string; prompt: string; url: string } | null;
 };
 export async function askAssistant(message: string, history: string[], signal: AbortSignal): Promise<AssistantReply> {
+  if (!API_URL) throw new ApiError(503, "backend_unconfigured");
   const response = await fetch(`${API_URL.replace(/\/$/, "")}/assistant/chat`, { method: "POST", cache: "no-store", credentials: "omit", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, history: history.slice(-4) }), signal: AbortSignal.any([signal, AbortSignal.timeout(60_000)]) });
   const body = await response.json();
   if (!response.ok) throw new ApiError(response.status, body.code);

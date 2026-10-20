@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${body.variable} ${heading.variable}`}>
       <body>
+        {process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL?.trim() && <p role="status" className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-center text-sm leading-6 text-amber-900">Bản xem trước giao diện. Dữ liệu tour, tài khoản và AI sẽ hoạt động sau khi kết nối máy chủ.</p>}
         <AuthProvider>
           {children}
         </AuthProvider>

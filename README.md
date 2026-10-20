@@ -169,6 +169,8 @@ pgvector được bật bởi init script khi khởi tạo volume mới. Dữ li
 
 ## Vercel
 
+Có thể deploy giao diện trước, kết nối backend sau. Cấu hình và giới hạn bản chỉ giao diện: [docs/vercel-deployment.md](docs/vercel-deployment.md). Để trống `NEXT_PUBLIC_API_URL` khi chưa có API public; production không gọi localhost của khách. Đã có `frontend/vercel.json` và `.vercelignore` để chuẩn bị upload.
+
 Chọn Root Directory là `frontend`, framework Next.js, đặt `NEXT_PUBLIC_API_URL=https://<api-domain>/api` và cho phép truy cập file ngoài root trong thiết lập monorepo để đọc `tsconfig.base.json`. Deploy frontend từ cùng repository; backend chạy trên VPS. Nếu Vercel trước đây dùng `client`, cập nhật Root Directory trước lần deploy tiếp theo.
 
 ## Phạm vi hiện tại
