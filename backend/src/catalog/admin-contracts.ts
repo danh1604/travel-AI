@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { TourContent, TourContentInput } from "./content-contracts.js";
 import type { DepartureInput, DepartureList } from "./departure-contracts.js";
+import type { RefreshInput, RefreshResult } from "./departure-refresh.js";
 
 const base = z
   .object({
@@ -34,7 +35,8 @@ export type AdminTour = TourInput & {
   revision: number;
   needsReview: boolean;
 };
-export type AdminData = { categories: AdminCategory[]; tours: AdminTour[] };
+export type AdminTourRow = AdminTour & { upcomingDepartures: number; totalDepartures: number };
+export type AdminData = { categories: AdminCategory[]; tours: AdminTourRow[] };
 export class CatalogWriteError extends Error {
   constructor(
     public status: number,
@@ -48,8 +50,11 @@ export interface AdminCatalogRepository {
   saveDeparture(id: string, input: DepartureInput, departureId?: string): Promise<DepartureList>;
   archiveDeparture(id: string, departureId: string, revision: number): Promise<DepartureList>;
   closeDeparture(id: string, departureId: string, revision: number): Promise<DepartureList>;
+  archivePastDepartures(id: string, revision: number): Promise<DepartureList>;
   getContent(id: string): Promise<TourContent>;
   saveContent(id: string, input: TourContentInput): Promise<TourContent>;
+  refreshDepartures(input: RefreshInput): Promise<RefreshResult>;
+  deleteTour(id: string, revision: number): Promise<void>;
   list(): Promise<AdminData>;
   saveCategory(
     input: CategoryInput,

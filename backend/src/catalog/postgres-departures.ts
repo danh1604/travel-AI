@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { getDatabase } from "../config/database.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import { CatalogWriteError } from "./admin-contracts.js";
-import type { DepartureInput, DepartureList } from "./departure-contracts.js";
+import { canArchiveDeparture, type DepartureInput, type DepartureList } from "./departure-contracts.js";
 
 async function read(
   tx: Prisma.TransactionClient,
@@ -114,7 +114,7 @@ export function archivePostgresDeparture(
       where: { id: departureId, tourId: id, status: { not: "deleted" } },
     });
     if (!departure) throw new CatalogWriteError(404, "departure_not_found");
-    if (departure.bookedPeople !== 0)
+    if (!canArchiveDeparture(departure.startsAt, departure.bookedPeople))
       throw new CatalogWriteError(409, "departure_has_guests");
     await tx.tourDeparture.update({
       where: { id: departureId },
@@ -136,6 +136,17 @@ export function closePostgresDeparture(
       data: { status: "closed" },
     });
     if (!result.count) throw new CatalogWriteError(404, "departure_not_found");
+    return read(tx, id);
+  });
+}
+
+export function archivePastPostgresDepartures(id: string, revision: number) {
+  return getDatabase().$transaction(async (tx) => {
+    await claim(tx, id, revision);
+    await tx.tourDeparture.updateMany({
+      where: { tourId: id, status: { not: "deleted" }, startsAt: { lt: new Date() } },
+      data: { status: "deleted" },
+    });
     return read(tx, id);
   });
 }

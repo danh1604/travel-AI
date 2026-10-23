@@ -111,3 +111,18 @@ export function departureSummary(
         .sort(compareAmounts)[0] ?? null,
   };
 }
+
+/** A tour with an upcoming departure that has guests must be handled by hand, never deleted in bulk. */
+export function hasUpcomingGuests(
+  departures: { startsAt: string | Date; bookedPeople: number | null }[],
+  now = Date.now(),
+) {
+  return departures.some(
+    (item) => new Date(item.startsAt).getTime() >= now && (item.bookedPeople ?? 0) > 0,
+  );
+}
+
+/** Past departures are history and can always be removed; upcoming ones only when known to have no guests. */
+export function canArchiveDeparture(startsAt: string | Date, bookedPeople: number | null, now = Date.now()) {
+  return new Date(startsAt).getTime() < now || bookedPeople === 0;
+}

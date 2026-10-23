@@ -6,7 +6,10 @@ import {
   savePostgresDeparture,
   archivePostgresDeparture,
   closePostgresDeparture,
+  archivePastPostgresDepartures,
 } from "./postgres-departures.js";
+import { refreshPostgresDepartures } from "./postgres-refresh.js";
+import { hasUpcomingGuests } from "./departure-contracts.js";
 import {
   CatalogWriteError,
   type AdminCatalogRepository,
@@ -32,10 +35,27 @@ export function postgresAdminCatalog(): AdminCatalogRepository {
     saveDeparture: savePostgresDeparture,
     archiveDeparture: archivePostgresDeparture,
     closeDeparture: closePostgresDeparture,
+    archivePastDepartures: archivePastPostgresDepartures,
+    refreshDepartures: refreshPostgresDepartures,
+    deleteTour(id, revision) {
+      return getDatabase().$transaction(async (tx) => {
+        const tour = await tx.tour.findUnique({
+          where: { id },
+          select: { revision: true, departures: { where: { status: { not: "deleted" } }, select: { startsAt: true, bookedPeople: true } } },
+        });
+        if (!tour) throw new CatalogWriteError(404, "not_found");
+        if (tour.revision !== revision) throw new CatalogWriteError(409, "stale_revision");
+        if (hasUpcomingGuests(tour.departures)) throw new CatalogWriteError(409, "tour_has_upcoming_guests");
+        // Departure services cascade; days, images, sections and discounts cascade from the tour.
+        await tx.tourDeparture.deleteMany({ where: { tourId: id } });
+        const deleted = await tx.tour.deleteMany({ where: { id, revision } });
+        if (!deleted.count) throw new CatalogWriteError(409, "stale_revision");
+      });
+    },
     getContent: getPostgresContent,
     saveContent: savePostgresContent,
     async list() {
-      const [categories, tours] = await getDatabase().$transaction(
+      const [categories, tours, departures] = await getDatabase().$transaction(
         [
           getDatabase().tourCategory.findMany({
             select: categorySelect,
@@ -45,11 +65,30 @@ export function postgresAdminCatalog(): AdminCatalogRepository {
             select: tourSelect,
             orderBy: { name: "asc" },
           }),
+          getDatabase().tourDeparture.findMany({
+            where: { status: { not: "deleted" } },
+            select: { tourId: true, startsAt: true, status: true, bookedPeople: true, maxPeople: true },
+          }),
         ],
         { isolationLevel: "RepeatableRead" },
       );
+      const now = Date.now();
+      const counts = new Map<string, { upcoming: number; total: number }>();
+      for (const item of departures) {
+        const entry = counts.get(item.tourId) ?? { upcoming: 0, total: 0 };
+        entry.total++;
+        if (item.status === "open" && item.startsAt.getTime() >= now && item.bookedPeople < item.maxPeople) entry.upcoming++;
+        counts.set(item.tourId, entry);
+      }
       // Status constraints are enforced by the database migrations.
-      return { categories, tours } as Awaited<
+      return {
+        categories,
+        tours: tours.map((tour) => ({
+          ...tour,
+          upcomingDepartures: counts.get(tour.id)?.upcoming ?? 0,
+          totalDepartures: counts.get(tour.id)?.total ?? 0,
+        })),
+      } as Awaited<
         ReturnType<AdminCatalogRepository["list"]>
       >;
     },

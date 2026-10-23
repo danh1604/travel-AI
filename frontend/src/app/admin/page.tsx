@@ -9,6 +9,7 @@ import { Icon, type IconName } from "@/components/icon";
 const shortcuts: { href: string; title: string; text: string; icon: IconName }[] = [
   { href: "/admin/tours", title: "Quản lý tour", text: "Tìm tour, tạo mới, chỉnh sửa thông tin và bật/tắt hiển thị trên Explore.", icon: "compass" },
   { href: "/admin/categories", title: "Quản lý category", text: "Tổ chức danh mục tour. Ẩn một category sẽ ẩn các tour liên quan khỏi Explore.", icon: "map" },
+  { href: "/admin/travel/destinations", title: "Điểm đến & dịch vụ", text: "Quản lý điểm đến, khách sạn, nhà hàng, điểm tham quan và phương tiện cùng mức giá tham khảo.", icon: "pin" },
   { href: "/admin/users", title: "Quản lý tài khoản", text: "Tìm người dùng, xem thông tin và cấp hoặc thu hồi quyền Admin ngay trên web.", icon: "user" },
   { href: "/admin/reviews", title: "Quản lý đánh giá tour", text: "Xem điểm sao và nhận xét; ẩn nội dung vi phạm hoặc hiển thị lại.", icon: "star" },
 ];

@@ -7,11 +7,11 @@ import { createPlannerService } from "../src/planner/service.js";
 
 test("curated external records have provenance, unknown prices and destination filtering", async () => {
   const guides = await loadGuides();
-  assert.equal(guides.length, 29); assert.equal(new Set(guides.map((g) => g.id)).size, 29);
-  assert.equal(new Set(guides.map((g) => g.destination)).size, 5);
-  assert.equal(new Set(guides.map((g) => g.source.url)).size, 7);
+  assert.equal(guides.length, 79); assert.equal(new Set(guides.map((g) => g.id)).size, 79);
+  assert.equal(new Set(guides.map((g) => g.destination)).size, 16);
+  assert.equal(new Set(guides.map((g) => g.source.url)).size, 20);
   for (const guide of guides) { assert.equal(guide.priceVnd, null); assert.equal(guide.openingHours, null); assert.equal(new URL(guide.source.url).search, ""); assert.equal(guide.checkedAt, "2026-10-18"); }
-  assert.equal((await loadGuides("Hue")).length, 4);
+  assert.equal((await loadGuides("Hue")).length, 6);
   assert.equal((await loadGuides("Thành phố Đà Nẵng")).length, 7);
   assert.equal((await loadGuides("Unknown")).length, 0);
 });
@@ -37,7 +37,7 @@ test("public guide endpoint validates filters and does not require a live tour d
   try {
     const response = await fetch(`http://127.0.0.1:${address.port}/guides?destination=Hue`);
     assert.equal(response.status, 200); assert.equal(response.headers.get("cache-control"), "no-store");
-    assert.equal((await response.json()).data.length, 4);
+    assert.equal((await response.json()).data.length, 6);
     assert.equal((await fetch(`http://127.0.0.1:${address.port}/guides?destination[]=Hue`)).status, 400);
   } finally { await new Promise<void>((r) => server.close(() => r())); }
 });

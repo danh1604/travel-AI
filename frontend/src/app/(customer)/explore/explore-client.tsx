@@ -13,6 +13,7 @@ import {
 import { CatalogNotice } from "@/components/catalog-notice";
 import { TourCard } from "@/components/tour-card";
 import { Icon } from "@/components/icon";
+import { ExploreTabs } from "@/components/explore-tabs";
 
 export default function ExploreClient() {
   const params = useSearchParams(),
@@ -75,6 +76,7 @@ export default function ExploreClient() {
   }
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
+      <div className="mb-6"><ExploreTabs active="tours" /></div>
       <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 px-6 pb-24 pt-12 text-white sm:px-12">
         <div aria-hidden="true" className="absolute -right-10 -top-16 h-72 w-72 rounded-full bg-emerald-400/25 blur-3xl" />
         <div aria-hidden="true" className="absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-orange-300/20 blur-3xl" />

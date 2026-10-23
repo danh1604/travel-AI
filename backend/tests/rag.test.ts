@@ -171,3 +171,16 @@ test("anonymous chatbot API enforces Origin, bounded history, JSON and no-store"
     const response = await post({ message: "Xin chào" }); assert.equal(response.status, 200); assert.equal(calls, 1); assert.equal(response.headers.get("cache-control"), "no-store");
   } finally { await new Promise<void>((r) => server.close(() => r())); }
 });
+test("corpus merges backend travel catalogue without prices", async () => {
+  const repo = await createLocalAuthRepository();
+  try {
+    await repo.seedTravelDemo();
+    const summaries = await repo.travelDestinations();
+    const travel = (await Promise.all(summaries.map((d) => repo.travelDestination(d.slug)))).filter((d) => d !== null);
+    const corpus = await buildCorpus(null, await loadGuides(), travel);
+    const kinds = new Set(corpus.docs.map((d) => d.kind));
+    assert.ok(kinds.has("travel")); assert.ok(corpus.docs.some((d) => d.id === "travel:attraction:dn-bai-bien-my-khe"));
+    assert.ok(corpus.docs.filter((d) => d.id.startsWith("travel:")).every((d) => !/\d{5,}/.test(d.body)));
+    assert.equal(lexicalRanking(corpus.docs, "quan chay o da nang")[0].doc.destinations[0], "Đà Nẵng");
+  } finally { await repo.close(); }
+});

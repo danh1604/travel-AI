@@ -37,6 +37,10 @@ export function createReviewRepository(db: AccountSql) {
       const result = (await db.query<{ total: number; data: Row[] }>(`SELECT (SELECT count(*)::int FROM "TourReview") AS total, COALESCE((SELECT json_agg(v) FROM (SELECT ${fields} FROM "TourReview" r JOIN "User" u ON u.id=r."userId" ORDER BY r."createdAt" DESC,r.id LIMIT 20 OFFSET $1) v),'[]'::json) AS data`, [(page - 1) * 20])).rows[0];
       return { data: result.data.map(serialize), total: result.total, page, totalPages: Math.ceil(result.total / 20) };
     },
+    // Reviews have no foreign key to the catalogue; remove them with the tour they describe.
+    async deleteTourReviews(tourId: string) {
+      await db.query('DELETE FROM "TourReview" WHERE "tourId"=$1', [tourId]);
+    },
     async moderateReview(id: string, hidden: boolean, revision: number) {
       const result = await db.query('UPDATE "TourReview" SET hidden=$2,revision=revision+1,"updatedAt"=now() WHERE id=$1 AND revision=$3 RETURNING id', [id, hidden, revision]);
       if (!result.rows.length) throw new ReviewConflict();

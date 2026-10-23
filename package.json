@@ -12,6 +12,8 @@
   },
   "scripts": {
     "test:reviews": "npm run test:reviews --workspace @pickyourway/server",
+    "test:refresh": "npm run test:refresh --workspace @pickyourway/server",
+    "test:travel": "npm run test:travel --workspace @pickyourway/server",
     "dev": "concurrently -k -n frontend,backend \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "npm run dev --workspace @pickyourway/client",
     "dev:backend": "npm run build --workspace @pickyourway/ai-services && npm run dev --workspace @pickyourway/server",

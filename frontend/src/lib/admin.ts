@@ -12,6 +12,15 @@ export type AdminTour = AdminCategory & {
   departureLocation: string;
   durationDays: number | null;
   needsReview: boolean;
+  upcomingDepartures?: number;
+  totalDepartures?: number;
+};
+export type RefreshChange = { departureId: string; action: "move" | "clone"; from: string; to: string; endsAt: string };
+export type RefreshResult = {
+  dryRun: boolean;
+  startDate: string;
+  tours: { id: string; name: string; changes: RefreshChange[] }[];
+  summary: { tours: number; moved: number; cloned: number };
 };
 export type AdminData = { categories: AdminCategory[]; tours: AdminTour[] };
 export type ContentStop = {
@@ -59,6 +68,10 @@ export function adminError(error: unknown): string {
     return "Dữ liệu đã được sửa ở nơi khác. Bấm Tải lại rồi mở lại bản ghi trước khi sửa.";
   if (error.code === "busy")
     return "Catalog đang được lưu bởi một yêu cầu khác. Hãy thử lại.";
+  if (error.code === "tour_has_upcoming_guests")
+    return "Tour có lịch sắp khởi hành đã có khách nên chưa thể xóa. Hãy đóng nhận khách hoặc ẩn tour thay vì xóa.";
+  if (error.code === "invalid_refresh")
+    return "Ngày bắt đầu phải từ hôm nay trở đi; khoảng cách giữa các lịch từ 1 đến 90 ngày.";
   if (error.code === "invalid_category")
     return "Category không còn tồn tại. Hãy tải lại danh sách.";
   if (error.code === "invalid_content")

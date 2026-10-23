@@ -2,6 +2,7 @@ import type { AccountAdminRepository } from "./account-admin.js";
 import type { SavedPlanRepository } from "../trips/repository.js";
 import type { KnowledgeRepository } from "../rag/store.js";
 import type { ReviewRepository } from "../reviews/repository.js";
+import type { TravelRepository } from "../travel/repository.js";
 export type Role = "USER" | "ADMIN";
 export type PublicUser = {
   id: string;
@@ -16,7 +17,7 @@ export type SessionRecord = {
   tokenHash: string;
   expiresAt: Date;
 };
-export interface AuthRepository extends AccountAdminRepository, SavedPlanRepository, KnowledgeRepository, ReviewRepository {
+export interface AuthRepository extends AccountAdminRepository, SavedPlanRepository, KnowledgeRepository, ReviewRepository, TravelRepository {
   findByEmail(email: string): Promise<AuthUser | null>;
   register(user: AuthUser, session: SessionRecord): Promise<void>;
   createSession(session: SessionRecord, previousHash?: string): Promise<void>;

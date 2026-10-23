@@ -2,43 +2,982 @@
   "version": 1,
   "checkedAt": "2026-10-18",
   "sources": [
-    {"id":"traveloka-dalat","name":"Traveloka — Cẩm nang Đà Lạt","url":"https://www.traveloka.com/vi-vn/destination/area/da-lat-10010169"},
-    {"id":"traveloka-danang","name":"Traveloka — Khám phá Sơn Trà","url":"https://www.traveloka.com/vi-vn/hotel/vietnam/city/son-tra-10010303"},
-    {"id":"traveloka-phuquoc","name":"Traveloka — Hoạt động Phú Quốc","url":"https://www.traveloka.com/vi-vn/activities/vietnam/city/phu-quoc-10011570"},
-    {"id":"traveloka-hoian","name":"Traveloka — Hoạt động Hội An","url":"https://www.traveloka.com/vi-vn/activities/vietnam/city/hoi-an-10010308"},
-    {"id":"vietnam-dalat","name":"Vietnam Tourism — Da Lat","url":"https://vietnam.travel/places-to-go/south-central-coast-central-highlands/dalat"},
-    {"id":"vietnam-hue","name":"Vietnam Tourism — Hue itinerary","url":"https://vietnam.travel/things-to-do/hue-itinerary"},
-    {"id":"vietnam-danang","name":"Vietnam Tourism — Da Nang Travel Guides","url":"https://vietnam.travel/things-to-do/da-nang-travel-guides"}
+    {
+      "id": "traveloka-dalat",
+      "name": "Traveloka — Cẩm nang Đà Lạt",
+      "url": "https://www.traveloka.com/vi-vn/destination/area/da-lat-10010169"
+    },
+    {
+      "id": "traveloka-danang",
+      "name": "Traveloka — Khám phá Sơn Trà",
+      "url": "https://www.traveloka.com/vi-vn/hotel/vietnam/city/son-tra-10010303"
+    },
+    {
+      "id": "traveloka-phuquoc",
+      "name": "Traveloka — Hoạt động Phú Quốc",
+      "url": "https://www.traveloka.com/vi-vn/activities/vietnam/city/phu-quoc-10011570"
+    },
+    {
+      "id": "traveloka-hoian",
+      "name": "Traveloka — Hoạt động Hội An",
+      "url": "https://www.traveloka.com/vi-vn/activities/vietnam/city/hoi-an-10010308"
+    },
+    {
+      "id": "vietnam-dalat",
+      "name": "Vietnam Tourism — Da Lat",
+      "url": "https://vietnam.travel/places-to-go/south-central-coast-central-highlands/dalat"
+    },
+    {
+      "id": "vietnam-hue",
+      "name": "Vietnam Tourism — Hue itinerary",
+      "url": "https://vietnam.travel/things-to-do/hue-itinerary"
+    },
+    {
+      "id": "vietnam-danang",
+      "name": "Vietnam Tourism — Da Nang Travel Guides",
+      "url": "https://vietnam.travel/things-to-do/da-nang-travel-guides"
+    },
+    {
+      "id": "vietnam-hanoi",
+      "name": "Vietnam Tourism — Hà Nội",
+      "url": "https://vietnam.travel/places-to-go/red-river-delta/ha-noi"
+    },
+    {
+      "id": "vietnam-halong",
+      "name": "Vietnam Tourism — Hạ Long",
+      "url": "https://vietnam.travel/places-to-go/red-river-delta/ha-long"
+    },
+    {
+      "id": "vietnam-ninhbinh",
+      "name": "Vietnam Tourism — Ninh Bình",
+      "url": "https://vietnam.travel/places-to-go/red-river-delta/ninh-binh"
+    },
+    {
+      "id": "vietnam-sapa",
+      "name": "Vietnam Tourism — Sa Pa",
+      "url": "https://vietnam.travel/places-to-go/northern-midlands-mountains/sapa"
+    },
+    {
+      "id": "vietnam-hagiang",
+      "name": "Vietnam Tourism — Hà Giang",
+      "url": "https://vietnam.travel/places-to-go/northern-midlands-mountains/ha-giang"
+    },
+    {
+      "id": "vietnam-maichau",
+      "name": "Vietnam Tourism — Mai Châu",
+      "url": "https://vietnam.travel/places-to-go/northern-midlands-mountains/mai-chau"
+    },
+    {
+      "id": "vietnam-phongnha",
+      "name": "Vietnam Tourism — Phong Nha",
+      "url": "https://vietnam.travel/places-to-go/north-central-coast/phong-nha"
+    },
+    {
+      "id": "vietnam-nhatrang",
+      "name": "Vietnam Tourism — Nha Trang",
+      "url": "https://vietnam.travel/places-to-go/south-central-coast-central-highlands/nha-trang"
+    },
+    {
+      "id": "vietnam-hcmc",
+      "name": "Vietnam Tourism — TP. Hồ Chí Minh",
+      "url": "https://vietnam.travel/places-to-go/southeastern-vietnam/ho-chi-minh-city"
+    },
+    {
+      "id": "vietnam-condao",
+      "name": "Vietnam Tourism — Côn Đảo",
+      "url": "https://vietnam.travel/places-to-go/southeastern-vietnam/con-dao"
+    },
+    {
+      "id": "vietnam-cantho",
+      "name": "Vietnam Tourism — Cần Thơ",
+      "url": "https://vietnam.travel/places-to-go/mekong-delta/can-tho"
+    },
+    {
+      "id": "vietnam-phuquoc",
+      "name": "Vietnam Tourism — Phú Quốc",
+      "url": "https://vietnam.travel/places-to-go/mekong-delta/phu-quoc"
+    },
+    {
+      "id": "vietnam-hue-city",
+      "name": "Vietnam Tourism — Huế",
+      "url": "https://vietnam.travel/places-to-go/north-central-coast/hue"
+    }
   ],
   "places": [
-    {"id":"dalat-xuan-huong","destination":"Đà Lạt","name":"Hồ Xuân Hương","description":"Gợi ý đi dạo và ngắm cảnh hồ trong khu vực trung tâm.","tags":["nature","relaxed"],"sourceId":"traveloka-dalat"},
-    {"id":"dalat-station","destination":"Đà Lạt","name":"Ga Đà Lạt","description":"Điểm tìm hiểu kiến trúc nhà ga và lịch sử địa phương.","tags":["culture","architecture"],"sourceId":"traveloka-dalat"},
-    {"id":"dalat-cathedral","destination":"Đà Lạt","name":"Nhà thờ Con Gà","description":"Gợi ý tham quan kiến trúc nhà thờ của thành phố.","tags":["culture","architecture"],"sourceId":"traveloka-dalat"},
-    {"id":"dalat-van-thanh","destination":"Đà Lạt","name":"Làng hoa Vạn Thành","description":"Điểm tham khảo cho trải nghiệm ngắm hoa tại Đà Lạt.","tags":["nature","flowers"],"sourceId":"traveloka-dalat"},
-    {"id":"dalat-market","destination":"Đà Lạt","name":"Chợ Đà Lạt","description":"Gợi ý khám phá nông sản và sinh hoạt chợ trung tâm.","tags":["food","culture"],"sourceId":"vietnam-dalat"},
-    {"id":"dalat-langbiang","destination":"Đà Lạt","name":"Núi Lang Biang","description":"Điểm tham khảo cho hoạt động khám phá cảnh quan vùng núi.","tags":["nature","active"],"sourceId":"vietnam-dalat"},
-    {"id":"dalat-kho-coffee","destination":"Đà Lạt","name":"K’Ho Coffee","description":"Tìm hiểu văn hóa cà phê và mô hình nông trại rang xay.","tags":["coffee","culture"],"sourceId":"vietnam-dalat"},
-    {"id":"dalat-linh-phuoc","destination":"Đà Lạt","name":"Chùa Linh Phước","description":"Gợi ý khám phá kiến trúc khảm tại khu vực Trại Mát.","tags":["culture","architecture"],"sourceId":"vietnam-dalat"},
-    {"id":"danang-son-tra","destination":"Đà Nẵng","name":"Bán đảo Sơn Trà","description":"Gợi ý khám phá cảnh quan rừng và biển của bán đảo.","tags":["nature","active"],"sourceId":"traveloka-danang"},
-    {"id":"danang-linh-ung","destination":"Đà Nẵng","name":"Chùa Linh Ứng Bãi Bụt","description":"Điểm tham khảo cho hoạt động tham quan văn hóa trên Sơn Trà.","tags":["culture","architecture"],"sourceId":"traveloka-danang"},
-    {"id":"danang-my-khe","destination":"Đà Nẵng","name":"Biển Mỹ Khê","description":"Gợi ý dạo biển và thư giãn tại khu vực ven biển.","tags":["beach","relaxed"],"sourceId":"traveloka-danang"},
-    {"id":"danang-ban-co","destination":"Đà Nẵng","name":"Đỉnh Bàn Cờ","description":"Điểm tham khảo để khám phá cảnh quan trên bán đảo Sơn Trà.","tags":["nature","active"],"sourceId":"traveloka-danang"},
-    {"id":"phuquoc-sao","destination":"Phú Quốc","name":"Bãi Sao","description":"Gợi ý tham quan bãi biển và ngắm cảnh ven bờ.","tags":["beach","relaxed"],"sourceId":"traveloka-phuquoc"},
-    {"id":"phuquoc-dinh-cau","destination":"Phú Quốc","name":"Dinh Cậu","description":"Điểm tham khảo cho trải nghiệm cảnh quan biển và tín ngưỡng địa phương.","tags":["culture","nature"],"sourceId":"traveloka-phuquoc"},
-    {"id":"phuquoc-hon-thom","destination":"Phú Quốc","name":"Hòn Thơm","description":"Gợi ý tìm hiểu hoạt động tham quan đảo và cáp treo.","tags":["island","active"],"sourceId":"traveloka-phuquoc"},
-    {"id":"phuquoc-grand-world","destination":"Phú Quốc","name":"Grand World Phú Quốc","description":"Điểm tham khảo cho hoạt động khám phá khu vui chơi và giải trí.","tags":["entertainment","culture"],"sourceId":"traveloka-phuquoc"},
-    {"id":"hoian-old-town","destination":"Hội An","name":"Phố cổ Hội An","description":"Gợi ý dạo phố và tìm hiểu kiến trúc, văn hóa địa phương.","tags":["culture","architecture"],"sourceId":"traveloka-hoian"},
-    {"id":"hoian-japanese-bridge","destination":"Hội An","name":"Chùa Cầu","description":"Điểm tham khảo cho hoạt động tìm hiểu kiến trúc biểu tượng Hội An.","tags":["culture","architecture"],"sourceId":"traveloka-hoian"},
-    {"id":"hoian-thanh-ha","destination":"Hội An","name":"Làng gốm Thanh Hà","description":"Gợi ý tìm hiểu nghề gốm và trải nghiệm thủ công truyền thống.","tags":["culture","craft"],"sourceId":"traveloka-hoian"},
-    {"id":"hoian-tra-que","destination":"Hội An","name":"Làng rau Trà Quế","description":"Điểm tham khảo để khám phá làng nghề và hoạt động nông nghiệp.","tags":["nature","food"],"sourceId":"traveloka-hoian"},
-    {"id":"hoian-bay-mau","destination":"Hội An","name":"Rừng dừa Bảy Mẫu","description":"Gợi ý tìm hiểu trải nghiệm thuyền thúng tại vùng dừa nước.","tags":["nature","active"],"sourceId":"traveloka-hoian"},
-    {"id":"hoian-an-bang","destination":"Hội An","name":"Biển An Bàng","description":"Gợi ý thư giãn ven biển trong chuyến tham quan Hội An.","tags":["beach","relaxed"],"sourceId":"traveloka-hoian"},
-    {"id":"hue-citadel","destination":"Huế","name":"Hoàng thành Huế","description":"Gợi ý khám phá kiến trúc cung đình và lịch sử triều Nguyễn.","tags":["culture","history"],"sourceId":"vietnam-hue"},
-    {"id":"hue-tu-duc","destination":"Huế","name":"Lăng Tự Đức","description":"Điểm tham khảo để tìm hiểu di sản lăng tẩm của Huế.","tags":["culture","history"],"sourceId":"vietnam-hue"},
-    {"id":"hue-thien-mu","destination":"Huế","name":"Chùa Thiên Mụ","description":"Gợi ý tham quan kiến trúc chùa bên sông Hương.","tags":["culture","architecture"],"sourceId":"vietnam-hue"},
-    {"id":"hue-an-dinh","destination":"Huế","name":"Cung An Định","description":"Gợi ý tìm hiểu kiến trúc và di sản cung đình tại Huế.","tags":["history","architecture"],"sourceId":"vietnam-hue"},
-    {"id":"danang-marble-mountains","destination":"Đà Nẵng","name":"Ngũ Hành Sơn","description":"Điểm tham khảo cho hoạt động khám phá núi đá, hang động và chùa.","tags":["nature","culture"],"sourceId":"vietnam-danang"},
-    {"id":"danang-dragon-bridge","destination":"Đà Nẵng","name":"Cầu Rồng","description":"Gợi ý ngắm kiến trúc cầu và cảnh quan đô thị bên sông.","tags":["architecture","relaxed"],"sourceId":"vietnam-danang"},
-    {"id":"danang-ba-na","destination":"Đà Nẵng","name":"Bà Nà Hills","description":"Điểm tham khảo cho hoạt động khám phá khu du lịch và Cầu Vàng.","tags":["entertainment","architecture"],"sourceId":"vietnam-danang"}
+    {
+      "id": "dalat-xuan-huong",
+      "destination": "Đà Lạt",
+      "name": "Hồ Xuân Hương",
+      "description": "Gợi ý đi dạo và ngắm cảnh hồ trong khu vực trung tâm.",
+      "tags": [
+        "nature",
+        "relaxed"
+      ],
+      "sourceId": "traveloka-dalat"
+    },
+    {
+      "id": "dalat-station",
+      "destination": "Đà Lạt",
+      "name": "Ga Đà Lạt",
+      "description": "Điểm tìm hiểu kiến trúc nhà ga và lịch sử địa phương.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "traveloka-dalat"
+    },
+    {
+      "id": "dalat-cathedral",
+      "destination": "Đà Lạt",
+      "name": "Nhà thờ Con Gà",
+      "description": "Gợi ý tham quan kiến trúc nhà thờ của thành phố.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "traveloka-dalat"
+    },
+    {
+      "id": "dalat-van-thanh",
+      "destination": "Đà Lạt",
+      "name": "Làng hoa Vạn Thành",
+      "description": "Điểm tham khảo cho trải nghiệm ngắm hoa tại Đà Lạt.",
+      "tags": [
+        "nature",
+        "flowers"
+      ],
+      "sourceId": "traveloka-dalat"
+    },
+    {
+      "id": "dalat-market",
+      "destination": "Đà Lạt",
+      "name": "Chợ Đà Lạt",
+      "description": "Gợi ý khám phá nông sản và sinh hoạt chợ trung tâm.",
+      "tags": [
+        "food",
+        "culture"
+      ],
+      "sourceId": "vietnam-dalat"
+    },
+    {
+      "id": "dalat-langbiang",
+      "destination": "Đà Lạt",
+      "name": "Núi Lang Biang",
+      "description": "Điểm tham khảo cho hoạt động khám phá cảnh quan vùng núi.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "vietnam-dalat"
+    },
+    {
+      "id": "dalat-kho-coffee",
+      "destination": "Đà Lạt",
+      "name": "K’Ho Coffee",
+      "description": "Tìm hiểu văn hóa cà phê và mô hình nông trại rang xay.",
+      "tags": [
+        "coffee",
+        "culture"
+      ],
+      "sourceId": "vietnam-dalat"
+    },
+    {
+      "id": "dalat-linh-phuoc",
+      "destination": "Đà Lạt",
+      "name": "Chùa Linh Phước",
+      "description": "Gợi ý khám phá kiến trúc khảm tại khu vực Trại Mát.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "vietnam-dalat"
+    },
+    {
+      "id": "danang-son-tra",
+      "destination": "Đà Nẵng",
+      "name": "Bán đảo Sơn Trà",
+      "description": "Gợi ý khám phá cảnh quan rừng và biển của bán đảo.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "traveloka-danang"
+    },
+    {
+      "id": "danang-linh-ung",
+      "destination": "Đà Nẵng",
+      "name": "Chùa Linh Ứng Bãi Bụt",
+      "description": "Điểm tham khảo cho hoạt động tham quan văn hóa trên Sơn Trà.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "traveloka-danang"
+    },
+    {
+      "id": "danang-my-khe",
+      "destination": "Đà Nẵng",
+      "name": "Biển Mỹ Khê",
+      "description": "Gợi ý dạo biển và thư giãn tại khu vực ven biển.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "traveloka-danang"
+    },
+    {
+      "id": "danang-ban-co",
+      "destination": "Đà Nẵng",
+      "name": "Đỉnh Bàn Cờ",
+      "description": "Điểm tham khảo để khám phá cảnh quan trên bán đảo Sơn Trà.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "traveloka-danang"
+    },
+    {
+      "id": "phuquoc-sao",
+      "destination": "Phú Quốc",
+      "name": "Bãi Sao",
+      "description": "Gợi ý tham quan bãi biển và ngắm cảnh ven bờ.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "traveloka-phuquoc"
+    },
+    {
+      "id": "phuquoc-dinh-cau",
+      "destination": "Phú Quốc",
+      "name": "Dinh Cậu",
+      "description": "Điểm tham khảo cho trải nghiệm cảnh quan biển và tín ngưỡng địa phương.",
+      "tags": [
+        "culture",
+        "nature"
+      ],
+      "sourceId": "traveloka-phuquoc"
+    },
+    {
+      "id": "phuquoc-hon-thom",
+      "destination": "Phú Quốc",
+      "name": "Hòn Thơm",
+      "description": "Gợi ý tìm hiểu hoạt động tham quan đảo và cáp treo.",
+      "tags": [
+        "island",
+        "active"
+      ],
+      "sourceId": "traveloka-phuquoc"
+    },
+    {
+      "id": "phuquoc-grand-world",
+      "destination": "Phú Quốc",
+      "name": "Grand World Phú Quốc",
+      "description": "Điểm tham khảo cho hoạt động khám phá khu vui chơi và giải trí.",
+      "tags": [
+        "entertainment",
+        "culture"
+      ],
+      "sourceId": "traveloka-phuquoc"
+    },
+    {
+      "id": "hoian-old-town",
+      "destination": "Hội An",
+      "name": "Phố cổ Hội An",
+      "description": "Gợi ý dạo phố và tìm hiểu kiến trúc, văn hóa địa phương.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hoian-japanese-bridge",
+      "destination": "Hội An",
+      "name": "Chùa Cầu",
+      "description": "Điểm tham khảo cho hoạt động tìm hiểu kiến trúc biểu tượng Hội An.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hoian-thanh-ha",
+      "destination": "Hội An",
+      "name": "Làng gốm Thanh Hà",
+      "description": "Gợi ý tìm hiểu nghề gốm và trải nghiệm thủ công truyền thống.",
+      "tags": [
+        "culture",
+        "craft"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hoian-tra-que",
+      "destination": "Hội An",
+      "name": "Làng rau Trà Quế",
+      "description": "Điểm tham khảo để khám phá làng nghề và hoạt động nông nghiệp.",
+      "tags": [
+        "nature",
+        "food"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hoian-bay-mau",
+      "destination": "Hội An",
+      "name": "Rừng dừa Bảy Mẫu",
+      "description": "Gợi ý tìm hiểu trải nghiệm thuyền thúng tại vùng dừa nước.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hoian-an-bang",
+      "destination": "Hội An",
+      "name": "Biển An Bàng",
+      "description": "Gợi ý thư giãn ven biển trong chuyến tham quan Hội An.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "traveloka-hoian"
+    },
+    {
+      "id": "hue-citadel",
+      "destination": "Huế",
+      "name": "Hoàng thành Huế",
+      "description": "Gợi ý khám phá kiến trúc cung đình và lịch sử triều Nguyễn.",
+      "tags": [
+        "culture",
+        "history"
+      ],
+      "sourceId": "vietnam-hue"
+    },
+    {
+      "id": "hue-tu-duc",
+      "destination": "Huế",
+      "name": "Lăng Tự Đức",
+      "description": "Điểm tham khảo để tìm hiểu di sản lăng tẩm của Huế.",
+      "tags": [
+        "culture",
+        "history"
+      ],
+      "sourceId": "vietnam-hue"
+    },
+    {
+      "id": "hue-thien-mu",
+      "destination": "Huế",
+      "name": "Chùa Thiên Mụ",
+      "description": "Gợi ý tham quan kiến trúc chùa bên sông Hương.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "vietnam-hue"
+    },
+    {
+      "id": "hue-an-dinh",
+      "destination": "Huế",
+      "name": "Cung An Định",
+      "description": "Gợi ý tìm hiểu kiến trúc và di sản cung đình tại Huế.",
+      "tags": [
+        "history",
+        "architecture"
+      ],
+      "sourceId": "vietnam-hue"
+    },
+    {
+      "id": "danang-marble-mountains",
+      "destination": "Đà Nẵng",
+      "name": "Ngũ Hành Sơn",
+      "description": "Điểm tham khảo cho hoạt động khám phá núi đá, hang động và chùa.",
+      "tags": [
+        "nature",
+        "culture"
+      ],
+      "sourceId": "vietnam-danang"
+    },
+    {
+      "id": "danang-dragon-bridge",
+      "destination": "Đà Nẵng",
+      "name": "Cầu Rồng",
+      "description": "Gợi ý ngắm kiến trúc cầu và cảnh quan đô thị bên sông.",
+      "tags": [
+        "architecture",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-danang"
+    },
+    {
+      "id": "danang-ba-na",
+      "destination": "Đà Nẵng",
+      "name": "Bà Nà Hills",
+      "description": "Điểm tham khảo cho hoạt động khám phá khu du lịch và Cầu Vàng.",
+      "tags": [
+        "entertainment",
+        "architecture"
+      ],
+      "sourceId": "vietnam-danang"
+    },
+    {
+      "id": "hanoi-hoan-kiem",
+      "destination": "Hà Nội",
+      "name": "Hồ Hoàn Kiếm và phố cổ",
+      "description": "Khu trung tâm để đi bộ, ngắm hồ, tìm hiểu phố cổ và các món ăn đường phố.",
+      "tags": [
+        "culture",
+        "food",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "hanoi-van-mieu",
+      "destination": "Hà Nội",
+      "name": "Văn Miếu – Quốc Tử Giám",
+      "description": "Di tích giáo dục xưa, phù hợp người thích lịch sử và kiến trúc truyền thống.",
+      "tags": [
+        "history",
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "hanoi-lang-bac",
+      "destination": "Hà Nội",
+      "name": "Quảng trường Ba Đình và Lăng Chủ tịch Hồ Chí Minh",
+      "description": "Cụm di tích lịch sử chính trị; nên kiểm tra quy định tham quan trước khi đi.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "hanoi-hoang-thanh",
+      "destination": "Hà Nội",
+      "name": "Hoàng thành Thăng Long",
+      "description": "Di tích khảo cổ và kiến trúc nhiều thời kỳ ở trung tâm thành phố.",
+      "tags": [
+        "history",
+        "architecture"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "hanoi-ho-tay",
+      "destination": "Hà Nội",
+      "name": "Hồ Tây",
+      "description": "Khu vực đạp xe, đi dạo, cà phê ven hồ và chùa Trấn Quốc.",
+      "tags": [
+        "relaxed",
+        "coffee",
+        "culture"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "hanoi-am-thuc",
+      "destination": "Hà Nội",
+      "name": "Ẩm thực Hà Nội",
+      "description": "Gợi ý trải nghiệm phở, bún chả, chả cá và cà phê trứng trong khu phố cổ.",
+      "tags": [
+        "food",
+        "coffee"
+      ],
+      "sourceId": "vietnam-hanoi"
+    },
+    {
+      "id": "halong-vinh",
+      "destination": "Hạ Long",
+      "name": "Vịnh Hạ Long",
+      "description": "Di sản thiên nhiên với hàng nghìn đảo đá vôi; đi tàu tham quan hoặc du thuyền nghỉ đêm.",
+      "tags": [
+        "nature",
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-halong"
+    },
+    {
+      "id": "halong-kayak",
+      "destination": "Hạ Long",
+      "name": "Chèo kayak khám phá hang động",
+      "description": "Hoạt động ngoài trời trên vịnh, phù hợp nhóm bạn và gia đình có trẻ lớn.",
+      "tags": [
+        "active",
+        "nature"
+      ],
+      "sourceId": "vietnam-halong"
+    },
+    {
+      "id": "halong-sunworld",
+      "destination": "Hạ Long",
+      "name": "Sun World Hạ Long",
+      "description": "Khu vui chơi giải trí và ngắm vịnh từ trên cao.",
+      "tags": [
+        "entertainment",
+        "family"
+      ],
+      "sourceId": "vietnam-halong"
+    },
+    {
+      "id": "halong-hai-san",
+      "destination": "Hạ Long",
+      "name": "Hải sản Hạ Long",
+      "description": "Gợi ý thưởng thức hải sản và chả mực địa phương.",
+      "tags": [
+        "food"
+      ],
+      "sourceId": "vietnam-halong"
+    },
+    {
+      "id": "ninhbinh-trang-an",
+      "destination": "Ninh Bình",
+      "name": "Tràng An",
+      "description": "Di sản kết hợp văn hóa và thiên nhiên, đi thuyền qua hang động giữa núi đá vôi.",
+      "tags": [
+        "nature",
+        "culture",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-ninhbinh"
+    },
+    {
+      "id": "ninhbinh-tam-coc",
+      "destination": "Ninh Bình",
+      "name": "Tam Cốc – Bích Động",
+      "description": "Thuyền trên sông Ngô Đồng qua cánh đồng lúa và hang động.",
+      "tags": [
+        "nature",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-ninhbinh"
+    },
+    {
+      "id": "ninhbinh-hang-mua",
+      "destination": "Ninh Bình",
+      "name": "Hang Múa",
+      "description": "Điểm leo bậc đá ngắm toàn cảnh thung lũng Tam Cốc.",
+      "tags": [
+        "active",
+        "nature"
+      ],
+      "sourceId": "vietnam-ninhbinh"
+    },
+    {
+      "id": "ninhbinh-bai-dinh",
+      "destination": "Ninh Bình",
+      "name": "Chùa Bái Đính",
+      "description": "Quần thể chùa quy mô lớn, thích hợp người quan tâm văn hóa tâm linh.",
+      "tags": [
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "vietnam-ninhbinh"
+    },
+    {
+      "id": "ninhbinh-co-do-hoa-lu",
+      "destination": "Ninh Bình",
+      "name": "Cố đô Hoa Lư",
+      "description": "Di tích kinh đô cổ của Việt Nam thế kỷ 10.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-ninhbinh"
+    },
+    {
+      "id": "sapa-fansipan",
+      "destination": "Sa Pa",
+      "name": "Đỉnh Fansipan",
+      "description": "Nóc nhà Đông Dương; có thể leo núi hoặc đi cáp treo tùy sức khỏe và thời tiết.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "vietnam-sapa"
+    },
+    {
+      "id": "sapa-cat-cat",
+      "destination": "Sa Pa",
+      "name": "Bản Cát Cát",
+      "description": "Bản làng người H'Mông, phù hợp đi bộ nhẹ và tìm hiểu nghề thủ công.",
+      "tags": [
+        "culture",
+        "craft",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-sapa"
+    },
+    {
+      "id": "sapa-ruong-bac-thang",
+      "destination": "Sa Pa",
+      "name": "Ruộng bậc thang Mường Hoa",
+      "description": "Cảnh quan ruộng bậc thang; mùa lúa chín và mùa nước đổ đều có vẻ đẹp riêng.",
+      "tags": [
+        "nature",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-sapa"
+    },
+    {
+      "id": "sapa-thac-bac",
+      "destination": "Sa Pa",
+      "name": "Thác Bạc và đèo Ô Quy Hồ",
+      "description": "Điểm ngắm cảnh núi rừng, thích hợp chuyến đi bằng xe.",
+      "tags": [
+        "nature"
+      ],
+      "sourceId": "vietnam-sapa"
+    },
+    {
+      "id": "sapa-nha-tho-da",
+      "destination": "Sa Pa",
+      "name": "Nhà thờ đá Sa Pa",
+      "description": "Công trình kiến trúc ở trung tâm thị trấn, thuận tiện đi bộ.",
+      "tags": [
+        "architecture",
+        "culture"
+      ],
+      "sourceId": "vietnam-sapa"
+    },
+    {
+      "id": "hagiang-ma-pi-leng",
+      "destination": "Hà Giang",
+      "name": "Đèo Mã Pì Lèng",
+      "description": "Cung đèo hùng vĩ nhìn xuống sông Nho Quế; cần lưu ý an toàn giao thông miền núi.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "vietnam-hagiang"
+    },
+    {
+      "id": "hagiang-dong-van",
+      "destination": "Hà Giang",
+      "name": "Cao nguyên đá Đồng Văn",
+      "description": "Công viên địa chất với phố cổ, chợ phiên và văn hóa các dân tộc.",
+      "tags": [
+        "nature",
+        "culture"
+      ],
+      "sourceId": "vietnam-hagiang"
+    },
+    {
+      "id": "hagiang-lung-cu",
+      "destination": "Hà Giang",
+      "name": "Cột cờ Lũng Cú",
+      "description": "Điểm cực Bắc của Việt Nam, phù hợp hành trình khám phá biên giới.",
+      "tags": [
+        "history",
+        "nature"
+      ],
+      "sourceId": "vietnam-hagiang"
+    },
+    {
+      "id": "hagiang-nho-que",
+      "destination": "Hà Giang",
+      "name": "Sông Nho Quế",
+      "description": "Du thuyền ngắm vách đá hẻm vực Tu Sản.",
+      "tags": [
+        "nature",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-hagiang"
+    },
+    {
+      "id": "maichau-ban-lac",
+      "destination": "Mai Châu",
+      "name": "Bản Lác",
+      "description": "Bản người Thái, trải nghiệm nhà sàn, văn hóa và ẩm thực địa phương.",
+      "tags": [
+        "culture",
+        "relaxed",
+        "food"
+      ],
+      "sourceId": "vietnam-maichau"
+    },
+    {
+      "id": "maichau-thung-lung",
+      "destination": "Mai Châu",
+      "name": "Thung lũng Mai Châu",
+      "description": "Cánh đồng lúa, đạp xe và đi bộ nhẹ giữa núi, hợp nghỉ cuối tuần.",
+      "tags": [
+        "nature",
+        "relaxed",
+        "active"
+      ],
+      "sourceId": "vietnam-maichau"
+    },
+    {
+      "id": "phongnha-dong",
+      "destination": "Phong Nha",
+      "name": "Động Phong Nha",
+      "description": "Hang động nổi tiếng tham quan bằng thuyền trên sông Son.",
+      "tags": [
+        "nature",
+        "active"
+      ],
+      "sourceId": "vietnam-phongnha"
+    },
+    {
+      "id": "phongnha-thien-duong",
+      "destination": "Phong Nha",
+      "name": "Động Thiên Đường",
+      "description": "Hang động có hệ thạch nhũ lớn, đi bộ trên lối gỗ trong hang.",
+      "tags": [
+        "nature"
+      ],
+      "sourceId": "vietnam-phongnha"
+    },
+    {
+      "id": "phongnha-son-doong",
+      "destination": "Phong Nha",
+      "name": "Hang Sơn Đoòng và các tour hang động mạo hiểm",
+      "description": "Hoạt động chuyên biệt, cần đặt trước và đủ thể lực; kiểm tra điều kiện của đơn vị tổ chức.",
+      "tags": [
+        "active",
+        "nature"
+      ],
+      "sourceId": "vietnam-phongnha"
+    },
+    {
+      "id": "nhatrang-bai-bien",
+      "destination": "Nha Trang",
+      "name": "Bãi biển Nha Trang",
+      "description": "Bãi biển dài ở trung tâm thành phố, thuận tiện nghỉ dưỡng và dịch vụ ven biển.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-nhatrang"
+    },
+    {
+      "id": "nhatrang-hon-mun",
+      "destination": "Nha Trang",
+      "name": "Đảo Hòn Mun và tour đảo",
+      "description": "Gợi ý tour đảo, lặn ngắm san hô và tắm biển.",
+      "tags": [
+        "beach",
+        "island",
+        "active"
+      ],
+      "sourceId": "vietnam-nhatrang"
+    },
+    {
+      "id": "nhatrang-thap-ba",
+      "destination": "Nha Trang",
+      "name": "Tháp Bà Ponagar",
+      "description": "Di tích Chăm Pa, điểm tham quan văn hóa lịch sử.",
+      "tags": [
+        "history",
+        "culture",
+        "architecture"
+      ],
+      "sourceId": "vietnam-nhatrang"
+    },
+    {
+      "id": "nhatrang-vinpearl",
+      "destination": "Nha Trang",
+      "name": "Vinpearl Nha Trang",
+      "description": "Khu vui chơi giải trí trên đảo, phù hợp gia đình có trẻ nhỏ.",
+      "tags": [
+        "entertainment",
+        "island"
+      ],
+      "sourceId": "vietnam-nhatrang"
+    },
+    {
+      "id": "nhatrang-hai-san",
+      "destination": "Nha Trang",
+      "name": "Hải sản và bún sứa Nha Trang",
+      "description": "Gợi ý ẩm thực biển địa phương.",
+      "tags": [
+        "food"
+      ],
+      "sourceId": "vietnam-nhatrang"
+    },
+    {
+      "id": "hcm-nha-tho-duc-ba",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Nhà thờ Đức Bà và Bưu điện Thành phố",
+      "description": "Cụm kiến trúc Pháp ở trung tâm, dễ kết hợp đi bộ.",
+      "tags": [
+        "architecture",
+        "history"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "hcm-dinh-doc-lap",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Dinh Độc Lập",
+      "description": "Di tích lịch sử gắn với năm 1975, phù hợp người quan tâm lịch sử.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "hcm-chien-tich",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Bảo tàng Chứng tích Chiến tranh",
+      "description": "Bảo tàng lịch sử với nội dung nặng về chiến tranh.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "hcm-cho-ben-thanh",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Chợ Bến Thành và khu trung tâm",
+      "description": "Chợ truyền thống, mua sắm và thưởng thức đồ ăn đường phố.",
+      "tags": [
+        "food",
+        "entertainment"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "hcm-cu-chi",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Địa đạo Củ Chi",
+      "description": "Chuyến đi nửa ngày ra ngoại thành tìm hiểu hệ thống địa đạo.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "hcm-am-thuc",
+      "destination": "TP. Hồ Chí Minh",
+      "name": "Ẩm thực Sài Gòn",
+      "description": "Gợi ý bánh mì, hủ tiếu, cơm tấm và cà phê.",
+      "tags": [
+        "food",
+        "coffee"
+      ],
+      "sourceId": "vietnam-hcmc"
+    },
+    {
+      "id": "condao-nha-tu",
+      "destination": "Côn Đảo",
+      "name": "Di tích nhà tù Côn Đảo",
+      "description": "Quần thể di tích lịch sử; không khí trang nghiêm, nên ăn mặc lịch sự.",
+      "tags": [
+        "history",
+        "culture"
+      ],
+      "sourceId": "vietnam-condao"
+    },
+    {
+      "id": "condao-bai-dam-trau",
+      "destination": "Côn Đảo",
+      "name": "Bãi Đầm Trầu và các bãi biển",
+      "description": "Bãi biển hoang sơ, phù hợp nghỉ ngơi và chụp ảnh.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-condao"
+    },
+    {
+      "id": "condao-vuon-quoc-gia",
+      "destination": "Côn Đảo",
+      "name": "Vườn quốc gia Côn Đảo",
+      "description": "Rừng, biển và hệ sinh thái; có hoạt động lặn ngắm san hô theo mùa.",
+      "tags": [
+        "nature",
+        "island",
+        "active"
+      ],
+      "sourceId": "vietnam-condao"
+    },
+    {
+      "id": "cantho-cai-rang",
+      "destination": "Cần Thơ",
+      "name": "Chợ nổi Cái Răng",
+      "description": "Chợ nổi trên sông, nên đi sáng sớm để xem hoạt động mua bán.",
+      "tags": [
+        "culture",
+        "food"
+      ],
+      "sourceId": "vietnam-cantho"
+    },
+    {
+      "id": "cantho-ben-ninh-kieu",
+      "destination": "Cần Thơ",
+      "name": "Bến Ninh Kiều",
+      "description": "Khu đi dạo ven sông buổi tối và điểm đi thuyền.",
+      "tags": [
+        "relaxed"
+      ],
+      "sourceId": "vietnam-cantho"
+    },
+    {
+      "id": "cantho-vuon-trai-cay",
+      "destination": "Cần Thơ",
+      "name": "Vườn trái cây miền Tây",
+      "description": "Trải nghiệm vườn cây, thuyền nhỏ và đặc sản địa phương.",
+      "tags": [
+        "nature",
+        "food",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-cantho"
+    },
+    {
+      "id": "phuquoc-bai-sao-vt",
+      "destination": "Phú Quốc",
+      "name": "Bãi Sao",
+      "description": "Bãi cát trắng, nước trong; phù hợp tắm biển và nghỉ ngơi.",
+      "tags": [
+        "beach",
+        "relaxed"
+      ],
+      "sourceId": "vietnam-phuquoc"
+    },
+    {
+      "id": "phuquoc-khu-giai-tri-dem",
+      "destination": "Phú Quốc",
+      "name": "Khu vui chơi giải trí buổi tối",
+      "description": "Khu giải trí buổi tối, phù hợp gia đình và nhóm bạn.",
+      "tags": [
+        "entertainment"
+      ],
+      "sourceId": "vietnam-phuquoc"
+    },
+    {
+      "id": "hue-song-huong",
+      "destination": "Huế",
+      "name": "Sông Hương và thuyền rồng",
+      "description": "Ngắm cảnh sông, nghe ca Huế trên thuyền; nên chọn khung giờ chiều tối.",
+      "tags": [
+        "relaxed",
+        "culture"
+      ],
+      "sourceId": "vietnam-hue-city"
+    },
+    {
+      "id": "hue-am-thuc",
+      "destination": "Huế",
+      "name": "Ẩm thực cung đình Huế",
+      "description": "Gợi ý bún bò, bánh bèo, bánh nậm và cơm hến.",
+      "tags": [
+        "food",
+        "culture"
+      ],
+      "sourceId": "vietnam-hue-city"
+    }
   ]
 }

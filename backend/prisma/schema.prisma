@@ -176,6 +176,7 @@ model Destination {
   sourceUrl       String?
   lastVerifiedAt  DateTime? @db.Timestamptz(3)
   isActive        Boolean @default(true)
+  revision        Int @default(1)
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
   hotels          Hotel[]
@@ -205,6 +206,7 @@ model Hotel {
   sourceUrl      String?
   lastVerifiedAt DateTime? @db.Timestamptz(3)
   isActive       Boolean @default(true)
+  revision        Int @default(1)
   createdAt      DateTime @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime @updatedAt @db.Timestamptz(3)
   destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
@@ -229,6 +231,7 @@ model Restaurant {
   sourceUrl      String?
   lastVerifiedAt DateTime? @db.Timestamptz(3)
   isActive       Boolean @default(true)
+  revision        Int @default(1)
   createdAt      DateTime @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime @updatedAt @db.Timestamptz(3)
   destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
@@ -254,6 +257,7 @@ model Attraction {
   sourceUrl       String?
   lastVerifiedAt  DateTime? @db.Timestamptz(3)
   isActive        Boolean @default(true)
+  revision        Int @default(1)
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
   destination     Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
@@ -277,6 +281,7 @@ model Transportation {
   sourceUrl       String?
   lastVerifiedAt  DateTime? @db.Timestamptz(3)
   isActive        Boolean @default(true)
+  revision        Int @default(1)
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
   destination     Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)

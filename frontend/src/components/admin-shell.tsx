@@ -10,6 +10,7 @@ const navigation: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin", label: "Tổng quan", icon: "home" },
   { href: "/admin/tours", label: "Tour & lịch khởi hành", icon: "compass" },
   { href: "/admin/categories", label: "Danh mục tour", icon: "map" },
+  { href: "/admin/travel/destinations", label: "Điểm đến & dịch vụ", icon: "pin" },
   { href: "/admin/users", label: "Tài khoản", icon: "user" },
   { href: "/admin/reviews", label: "Đánh giá & nhận xét", icon: "shield" },
 ];
@@ -21,7 +22,7 @@ export function AdminShell({ children, development }: { children: ReactNode; dev
   const access = adminAccess({ loading, error, role: user?.role ?? null, checked: checkedPathname, pathname });
   if (access !== "allowed") return <main className="admin-login-surface flex min-h-screen items-center justify-center p-6"><section className="card fade-up w-full max-w-lg p-8 shadow-xl"><span className="icon-bubble h-14 w-14 rounded-2xl">{access === "checking" ? <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-emerald-200 border-t-emerald-600" /> : <Icon name="shield" className="h-6 w-6" />}</span><h1 className="mt-5 text-2xl font-semibold">{access === "checking" ? "Đang kiểm tra quyền truy cập…" : access === "unavailable" ? "Chưa kết nối được tài khoản" : access === "login" ? "Đăng nhập khu vực quản trị" : "Khu vực dành cho quản trị viên"}</h1><p role={access === "checking" ? "status" : undefined} className="mt-3 text-sm leading-7 text-stone-600">{access === "checking" ? "Vui lòng chờ trong giây lát." : access === "unavailable" ? "Kiểm tra kết nối rồi thử lại nhé." : access === "login" ? "Dùng tài khoản có quyền quản trị để tiếp tục." : "Tài khoản hiện tại không có quyền quản trị. Bạn vẫn có thể khám phá tour và sử dụng Planner."}</p><div className="mt-6 flex flex-wrap gap-3">{access === "unavailable" ? <button className="button-primary" onClick={() => void refresh()}>Thử lại</button> : access !== "checking" && <Link className="button-primary" href={`/admin/login?next=${encodeURIComponent(pathname)}`}>Đăng nhập quản trị</Link>}<Link className="button-secondary" href="/">Về trang du lịch</Link></div></section></main>;
   const items = development ? [...navigation, { href: "/admin/tools", label: "Công cụ kiểm tra", icon: "code" as const }] : navigation;
-  const active = (href: string) => href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+  const active = (href: string) => href === "/admin" ? pathname === href : href === "/admin/travel/destinations" ? pathname.startsWith("/admin/travel") : pathname === href || pathname.startsWith(`${href}/`);
   const label = pathname.endsWith("/departures") ? "Quản lý lịch khởi hành" : pathname.endsWith("/content") ? "Nội dung tour" : items.find((item) => active(item.href))?.label ?? "Quản trị";
   const initials = (user?.name ?? "A").trim().split(/\s+/).slice(-2).map((part) => part[0]).join("").toUpperCase();
   async function signOut() { setPending(true); setLogoutError(""); try { await logout(); router.replace("/admin/login"); } catch { setLogoutError("Chưa đăng xuất được. Bạn thử lại nhé."); } finally { setPending(false); } }

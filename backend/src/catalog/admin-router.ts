@@ -20,6 +20,7 @@ import {
 import { getAdminCatalog } from "./repository.js";
 import { tourContentInput } from "./content-contracts.js";
 import { departureInput, departureArchive } from "./departure-contracts.js";
+import { refreshInput, vnToday } from "./departure-refresh.js";
 
 export function createAdminCatalogRouter(
   repository: () => AdminCatalogRepository = getAdminCatalog,
@@ -54,6 +55,14 @@ export function createAdminCatalogRouter(
   });
   router.get("/catalog", async (_request, response) => {
     response.json(await repository().list());
+  });
+  router.post("/departures/refresh", async (request, response) => {
+    const input = refreshInput.safeParse(request.body);
+    if (!input.success || input.data.startDate < vnToday(Date.now())) {
+      response.status(400).json({ code: "invalid_refresh" });
+      return;
+    }
+    response.json(await repository().refreshDepartures(input.data));
   });
   router.get("/tours/:id/departures", async (request, response) => {
     const id = z.string().uuid().safeParse(request.params.id);
@@ -113,6 +122,15 @@ export function createAdminCatalogRouter(
       },
     );
   }
+  router.post("/tours/:id/departures/archive-past", async (request, response) => {
+    const id = z.string().uuid().safeParse(request.params.id),
+      input = departureArchive.safeParse(request.body);
+    if (!id.success || !input.success) {
+      response.status(400).json({ code: "invalid_departure" });
+      return;
+    }
+    response.json({ data: await repository().archivePastDepartures(id.data, input.data.revision) });
+  });
   router.delete(
     "/tours/:id/departures/:departureId",
     async (request, response) => {
@@ -132,6 +150,18 @@ export function createAdminCatalogRouter(
       });
     },
   );
+  router.delete("/tours/:id", async (request, response) => {
+    const id = z.string().uuid().safeParse(request.params.id),
+      input = departureArchive.safeParse(request.body);
+    if (!id.success || !input.success) {
+      response.status(400).json({ code: "invalid_input" });
+      return;
+    }
+    await repository().deleteTour(id.data, input.data.revision);
+    // Best effort: the tour is already gone, so a failure here only leaves hidden orphan reviews.
+    await (await auth()).deleteTourReviews(id.data).catch(() => undefined);
+    response.status(204).end();
+  });
   router.get("/tours/:id/content", async (request, response) => {
     const id = z.string().uuid().safeParse(request.params.id);
     if (!id.success) {

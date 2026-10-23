@@ -35,6 +35,7 @@ Chỉ copy file env khi chưa có, tránh ghi đè cấu hình đã sửa. Sau k
 
 Giao diện khách hàng dùng layout riêng tại `/`, `/explore`, `/planner`, `/my-trips` và `/account`. Quản trị có menu/layout riêng tại `/admin`, đăng nhập ở `/admin/login`; chỉ role ADMIN được mở nội dung quản trị. Cùng hệ thống tài khoản và API bảo vệ quyền ở backend. Giao diện dùng tông sáng trắng/mint. Trong dev, công cụ kiểm tra API nằm tại `/admin/tools`, không hiện trong menu khách hàng.
 Chi tiết các trang và luồng đối chiếu tour: [docs/web-shell.md](docs/web-shell.md).
+Điểm đến, khách sạn, nhà hàng, điểm tham quan và phương tiện: [docs/travel-catalog.md](docs/travel-catalog.md).
 
 ## Chạy Explore không cần Docker
 

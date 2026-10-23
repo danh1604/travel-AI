@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-export type KnowledgeDoc = { id: string; title: string; body: string; url: string; kind: "help" | "tour" | "guide" | "destination"; destinations: string[] };
+export type KnowledgeDoc = { id: string; title: string; body: string; url: string; kind: "help" | "tour" | "guide" | "destination" | "travel"; destinations: string[] };
 export const normalize = (v: string) => v.normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[đĐ]/g, "d").toLowerCase();
 const stopwords = new Set("toi minh muon di du lich la o co cho va the nao gi mot nhung ban khong cua voi duoc hay thi khi cach nen tai sao".split(" "));
 export function tokens(text: string) { return (normalize(text).match(/[a-z0-9]+/g) ?? []).filter((v) => v.length > 1 && !stopwords.has(v)); }

@@ -5,6 +5,7 @@ import { createAccountAdminRepository } from "./account-admin.js";
 import { createSavedPlanRepository } from "../trips/repository.js";
 import { createKnowledgeRepository } from "../rag/store.js";
 import { createReviewRepository } from "../reviews/repository.js";
+import { createTravelRepository } from "../travel/repository.js";
 import type { PGlite } from "@electric-sql/pglite";
 import { DuplicateEmail, type AuthRepository, type AuthUser, type PublicUser } from "./types.js";
 
@@ -15,9 +16,11 @@ export async function createLocalAuthRepository(directory?: string): Promise<Aut
   let database: PGlite;
   try { database = new PGlite({ dataDir: directory, extensions: { vector } }); }
   catch (error) { await releaseLock(); throw error; }
-  try { await migrate(database); } catch (error) { await database.close(); await releaseLock(); throw error; }
+  const travel = createTravelRepository({ query: <T>(sql: string, values: unknown[]) => database.query<T>(sql, values) });
+  try { await migrate(database); await travel.seedTravelDemo({ onlyIfEmpty: true }); } catch (error) { await database.close(); await releaseLock(); throw error; }
   return {
     ...createReviewRepository({ query: <T>(sql: string, values: unknown[]) => database.query<T>(sql, values) }),
+    ...travel,
     ...createKnowledgeRepository({ query: <T>(sql: string, values: unknown[]) => database.query<T>(sql, values), transaction: (run) => database.transaction((tx) => run({ query: <T>(sql: string, values: unknown[]) => tx.query<T>(sql, values) })) }),
     ...createSavedPlanRepository({ query: <T>(sql: string, values: unknown[]) => database.query<T>(sql, values) }),
     ...createAccountAdminRepository({

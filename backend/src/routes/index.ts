@@ -8,6 +8,7 @@ import { createPlannerRouter } from "../planner/router.js";
 import { createTripsRouter } from "../trips/router.js";
 import { createAssistantRouter } from "../rag/router.js";
 import { createReviewsRouter } from "../reviews/router.js";
+import { createAdminTravelRouter, createTravelRouter } from "../travel/router.js";
 
 export const apiRouter = Router();
 apiRouter.use("/explore", createCatalogRouter());
@@ -15,8 +16,10 @@ apiRouter.use("/planner", createPlannerRouter());
 apiRouter.use("/trips", createTripsRouter());
 apiRouter.use("/assistant", createAssistantRouter());
 apiRouter.use("/reviews", createReviewsRouter());
+apiRouter.use("/travel", createTravelRouter());
 apiRouter.use("/auth", createAuthRouter());
 apiRouter.use("/admin/users", createAccountAdminRouter());
+apiRouter.use("/admin/travel", createAdminTravelRouter());
 apiRouter.use("/admin", createAdminCatalogRouter());
 apiRouter.get("/health", (_request, response) => {
   response.json({ status: "ok", service: "pickyourway-server" });

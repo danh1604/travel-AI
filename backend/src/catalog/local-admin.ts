@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
 import { dirname } from "node:path";
 import { z } from "zod";
-import { departureSummary, type DepartureList } from "./departure-contracts.js";
+import { canArchiveDeparture, departureSummary, hasUpcomingGuests, type DepartureList } from "./departure-contracts.js";
+import { planRefresh } from "./departure-refresh.js";
 import {
   activityTypeSchema,
   checkContentOwnership,
@@ -41,6 +42,7 @@ const stateSchema = z.object({
             minPeople: z.number().int().nullable(),
             maxPeople: z.number().int().nullable(),
             bookedPeople: z.number().int().nullable(),
+            clonedFrom: z.string().uuid().nullable().default(null),
           }),
         )
         .default([]),
@@ -171,6 +173,7 @@ export function createLocalAdminCatalog(
           minPeople: input.minPeople,
           maxPeople: input.maxPeople,
           bookedPeople: input.bookedPeople,
+          clonedFrom: tour.departureManagement.find((item) => item.id === recordId)?.clonedFrom ?? null,
         };
         tour.departureManagement = [
           ...tour.departureManagement.filter((item) => item.id !== recordId),
@@ -178,6 +181,19 @@ export function createLocalAdminCatalog(
         ];
         tour.revision++;
         tour.needsReview = true;
+        return departureList(tour);
+      });
+    },
+    archivePastDepartures(id, revision) {
+      return write((state) => {
+        const tour = state.tours.find((item) => item.id === id);
+        if (!tour) throw new CatalogWriteError(404, "not_found");
+        if (tour.revision !== revision) throw new CatalogWriteError(409, "stale_revision");
+        const now = Date.now();
+        const past = new Set(tour.departures.filter((item) => Date.parse(item.startsAt) < now).map((item) => item.id));
+        tour.departures = tour.departures.filter((item) => !past.has(item.id));
+        tour.departureManagement = tour.departureManagement.filter((item) => !past.has(item.id));
+        tour.revision++;
         return departureList(tour);
       });
     },
@@ -192,7 +208,8 @@ export function createLocalAdminCatalog(
         const metadata = tour.departureManagement.find(
           (item) => item.id === departureId,
         );
-        if (metadata?.bookedPeople !== 0)
+        const target = tour.departures.find((item) => item.id === departureId)!;
+        if (!canArchiveDeparture(target.startsAt, metadata?.bookedPeople ?? null))
           throw new CatalogWriteError(409, "departure_has_guests");
         tour.departures = tour.departures.filter(
           (item) => item.id !== departureId,
@@ -238,11 +255,95 @@ export function createLocalAdminCatalog(
         return content(tour);
       });
     },
+    deleteTour(id, revision) {
+      return write((state) => {
+        const index = state.tours.findIndex((item) => item.id === id);
+        if (index < 0) throw new CatalogWriteError(404, "not_found");
+        const tour = state.tours[index];
+        if (tour.revision !== revision) throw new CatalogWriteError(409, "stale_revision");
+        if (
+          hasUpcomingGuests(
+            tour.departures.map((item) => ({
+              startsAt: item.startsAt,
+              bookedPeople: tour.departureManagement.find((entry) => entry.id === item.id)?.bookedPeople ?? null,
+            })),
+          )
+        )
+          throw new CatalogWriteError(409, "tour_has_upcoming_guests");
+        state.tours.splice(index, 1);
+      });
+    },
+    refreshDepartures(input) {
+      const now = Date.now();
+      const plan = (state: State) =>
+        planRefresh(
+          state.tours.map((tour) => ({
+            id: tour.id,
+            name: tour.name,
+            status: tour.status,
+            departures: tour.departures.map((item) => ({
+              id: item.id,
+              startsAt: item.startsAt,
+              endsAt: item.endsAt,
+              status: item.status,
+              bookedPeople:
+                tour.departureManagement.find((entry) => entry.id === item.id)?.bookedPeople ?? null,
+              cloned: tour.departureManagement.some((entry) => entry.clonedFrom === item.id),
+            })),
+          })),
+          input,
+          now,
+        );
+      if (input.dryRun) return read().then(plan);
+      return write((state) => {
+        const result = plan(state);
+        for (const planned of result.tours) {
+          const tour = state.tours.find((item) => item.id === planned.id)!;
+          for (const change of planned.changes) {
+            const source = tour.departures.find((item) => item.id === change.departureId)!;
+            const metadata = tour.departureManagement.find((entry) => entry.id === source.id);
+            const maxPeople = metadata?.maxPeople ?? null;
+            const fresh = {
+              startsAt: change.to,
+              endsAt: change.endsAt,
+              status: "open" as const,
+              needsReview: true,
+              availableSeats: maxPeople ?? (change.action === "move" ? source.availableSeats : null),
+            };
+            if (change.action === "move") {
+              Object.assign(source, fresh);
+              if (metadata && maxPeople !== null) metadata.bookedPeople = 0;
+            } else {
+              const id = randomUUID();
+              tour.departures.push({ ...source, ...fresh, id });
+              tour.departureManagement.push({
+                id,
+                basePriceVnd: metadata?.basePriceVnd ?? null,
+                minPeople: metadata?.minPeople ?? null,
+                maxPeople,
+                bookedPeople: maxPeople === null ? null : 0,
+                clonedFrom: source.id,
+              });
+            }
+          }
+          tour.revision++;
+        }
+        return result;
+      });
+    },
     async list() {
       const state = await read();
+      const now = Date.now();
       return {
         categories: state.categories,
         tours: state.tours.map((item) => ({
+          upcomingDepartures: item.departures.filter(
+            (entry) =>
+              entry.status === "open" &&
+              Date.parse(entry.startsAt) >= now &&
+              entry.availableSeats !== 0,
+          ).length,
+          totalDepartures: item.departures.length,
           id: item.id,
           name: item.name,
           slug: item.slug,

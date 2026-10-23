@@ -12,7 +12,7 @@ const navigation: {
   icon: IconName;
 }[] = [
   { href: "/", label: "Trang chủ", icon: "home" },
-  { href: "/explore", label: "Khám phá tour", icon: "compass" },
+  { href: "/explore", label: "Khám phá", icon: "compass" },
   { href: "/planner", label: "Lập kế hoạch AI", icon: "sparkles" },
   { href: "/my-trips", label: "Chuyến đi của tôi", icon: "calendar" },
 ];
@@ -25,7 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const active = (href: string) =>
     href === "/"
       ? pathname === "/"
-      : pathname === href || pathname.startsWith(`${href}/`);
+      : pathname === href || pathname.startsWith(`${href}/`) || (href === "/explore" && pathname.startsWith("/destinations"));
   return (
     <div className="app-shell customer-shell flex min-h-screen flex-col">
       <a href="#main-content" className="skip-link">
@@ -128,6 +128,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </p>
             <ul className="mt-4 space-y-2.5 text-sm text-stone-600">
               <li><Link className="hover:text-emerald-700" href="/explore">Tất cả tour</Link></li>
+              <li><Link className="hover:text-emerald-700" href="/destinations">Điểm đến</Link></li>
+              <li><Link className="hover:text-emerald-700" href="/explore/hotels">Khách sạn &amp; nhà hàng</Link></li>
               <li><Link className="hover:text-emerald-700" href="/explore/guides">Điểm đến tham khảo</Link></li>
               <li><Link className="hover:text-emerald-700" href="/planner">Lập kế hoạch AI</Link></li>
             </ul>

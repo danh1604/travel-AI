@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { adminFetch, adminError } from "@/lib/admin";
+import { adminFetch, adminError, type RefreshResult } from "@/lib/admin";
 import { ApiError } from "@/lib/api";
 import { formatDate, formatVnd, formatSourcePrice } from "@/lib/explore";
 import {
@@ -19,7 +19,7 @@ function errorMessage(error: unknown) {
   if (error instanceof ApiError && error.code === "invalid_departure")
     return "Kiểm tra ngày về ≥ ngày đi; giá không âm; 1 ≤ số khách tối thiểu ≤ tổng chỗ; số đã đặt không vượt tổng chỗ. Lịch mở phải còn chỗ, lịch hết chỗ phải có số đã đặt bằng tổng chỗ. Giá xác nhận là số nguyên VNĐ tối đa 999999999999.";
   if (error instanceof ApiError && error.code === "departure_has_guests")
-    return "Chỉ gỡ lịch đã xác định có 0 khách. Với lịch có khách hoặc chưa rõ số khách, hãy sửa và chọn Đóng nhận khách.";
+    return "Lịch sắp tới đã có khách hoặc chưa rõ số khách nên chưa thể xóa. Hãy sửa và chọn Đóng nhận khách. Lịch đã qua luôn xóa được.";
   return adminError(error);
 }
 function DepartureEditor({
@@ -217,7 +217,10 @@ export function AdminDepartures({ id }: { id: string }) {
       null,
     ),
     [busy, setBusy] = useState(false),
-    [remove, setRemove] = useState<AdminDeparture | null>(null);
+    [remove, setRemove] = useState<AdminDeparture | null>(null),
+    [renewPlan, setRenewPlan] = useState<RefreshResult | null>(null),
+    [bulkRemove, setBulkRemove] = useState(false);
+  const [now] = useState(() => Date.now());
   useEffect(() => {
     const controller = new AbortController();
     void adminFetch<{ data: DepartureList }>(
@@ -285,7 +288,62 @@ export function AdminDepartures({ id }: { id: string }) {
       setList(result.data);
       setRemove(null);
       setEditor(null);
-      setNotice("Đã gỡ lịch khỏi danh sách hiển thị.");
+      setNotice("Đã xóa lịch khởi hành.");
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+  const renewBody = (dryRun: boolean) =>
+    JSON.stringify({
+      startDate: new Date(Date.now() + 7 * 3_600_000).toISOString().slice(0, 10),
+      gapDays: 7,
+      dryRun,
+      tourId: id,
+    });
+  async function renew(dryRun: boolean) {
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await adminFetch<RefreshResult>("departures/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: renewBody(dryRun),
+      });
+      if (dryRun) {
+        setNotice(result.summary.tours ? "" : "Không có lịch cũ nào cần làm mới.");
+        setRenewPlan(result.summary.tours ? result : null);
+      } else {
+        setRenewPlan(null);
+        reload();
+        setNotice(`Đã làm mới ${result.summary.moved + result.summary.cloned} lịch khởi hành.`);
+      }
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function archivePast() {
+    if (!list || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await adminFetch<{ data: DepartureList }>(
+        `tours/${encodeURIComponent(id)}/departures/archive-past`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ revision: list.revision }),
+        },
+      );
+      const removed = list.departures.length - result.data.departures.length;
+      setList(result.data);
+      setBulkRemove(false);
+      setEditor(null);
+      setNotice(`Đã xóa ${removed} lịch đã qua.`);
     } catch (reason) {
       setError(errorMessage(reason));
     } finally {
@@ -366,6 +424,29 @@ export function AdminDepartures({ id }: { id: string }) {
         {list && (
           <button
             disabled={busy}
+            onClick={() => void renew(true)}
+            className={button}
+          >
+            Làm mới lịch cũ
+          </button>
+        )}
+        {list && list.departures.some((row) => Date.parse(row.startsAt) < now) && (
+          <button
+            disabled={busy}
+            onClick={() => {
+              setBulkRemove(true);
+              setRemove(null);
+              setEditor(null);
+              setRenewPlan(null);
+            }}
+            className={`${button} text-red-800`}
+          >
+            Xóa lịch đã qua
+          </button>
+        )}
+        {list && (
+          <button
+            disabled={busy}
             onClick={() => {
               setEditor({ row: null });
               setRemove(null);
@@ -378,11 +459,46 @@ export function AdminDepartures({ id }: { id: string }) {
           </button>
         )}
       </div>
+      {renewPlan && (
+        <section className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-sm">
+          <p className="font-semibold">
+            Dời toàn bộ {renewPlan.summary.moved + renewPlan.summary.cloned} lịch cũ sang ngày mới, cách nhau 7 ngày (giữ giờ đi, số ngày và giá):
+          </p>
+          <ul className="mt-3 space-y-1">
+            {renewPlan.tours[0].changes.map((change) => (
+              <li key={change.departureId}>
+                {formatDate(change.from)} → <strong>{formatDate(change.to)}</strong>
+                {change.action === "clone" ? " (đã có khách: giữ lịch cũ, tạo bản mới)" : ""}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 flex gap-3">
+            <button disabled={busy} onClick={() => void renew(false)} className="button-primary min-h-10 px-4 py-2">
+              Áp dụng
+            </button>
+            <button disabled={busy} onClick={() => setRenewPlan(null)} className={button}>
+              Hủy
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-stone-600">
+            Muốn chọn ngày đi hoặc khoảng cách khác? Dùng nút “Làm mới lịch cũ” ở danh sách tour.
+          </p>
+        </section>
+      )}
+      {bulkRemove && list && (
+        <section className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm">
+          <p>Xóa {list.departures.filter((row) => Date.parse(row.startsAt) < now).length} lịch đã qua của tour này? Các lịch sắp tới không bị ảnh hưởng.</p>
+          <div className="mt-4 flex gap-3">
+            <button disabled={busy} onClick={() => void archivePast()} className={`${button} text-red-800`}>Xác nhận xóa</button>
+            <button disabled={busy} onClick={() => setBulkRemove(false)} className={button}>Giữ lại</button>
+          </div>
+        </section>
+      )}
       {remove && (
         <section className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm">
           <p>
-            Gỡ lịch đi {formatDate(remove.startsAt)}? Lịch này sẽ không còn xuất
-            hiện trên Explore.
+            Xóa lịch đi {formatDate(remove.startsAt)}? Lịch này sẽ không còn xuất
+            hiện trên Explore và không thể khôi phục.
           </p>
           <div className="mt-4 flex gap-3">
             <button
@@ -390,7 +506,7 @@ export function AdminDepartures({ id }: { id: string }) {
               onClick={archive}
               className={`${button} text-red-800`}
             >
-              Xác nhận gỡ lịch
+              Xác nhận xóa lịch
             </button>
             <button
               disabled={busy}
@@ -431,10 +547,13 @@ export function AdminDepartures({ id }: { id: string }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {list.departures.map((row) => (
-                    <tr key={row.id} className="border-b border-stone-100">
+                  {[...list.departures].reverse().map((row) => (
+                    <tr key={row.id} className={`border-b border-stone-100 ${Date.parse(row.startsAt) < now ? "opacity-60" : ""}`}>
                       <td className="whitespace-nowrap py-4 pr-4">
                         {formatDate(row.startsAt)}
+                        {Date.parse(row.startsAt) < now && (
+                          <span className="ml-2 rounded-full bg-stone-100 px-2 py-0.5 text-xs text-stone-600">Đã qua</span>
+                        )}
                         <span className="mt-1 block text-xs text-stone-500">
                           → {formatDate(row.endsAt)}
                         </span>
@@ -480,7 +599,7 @@ export function AdminDepartures({ id }: { id: string }) {
                             Sửa
                           </button>
                           <button
-                            disabled={busy || row.bookedPeople !== 0}
+                            disabled={busy || !(Date.parse(row.startsAt) < now || row.bookedPeople === 0)}
                             className={`${button} text-red-800`}
                             onClick={() => {
                               setRemove(row);
@@ -488,7 +607,7 @@ export function AdminDepartures({ id }: { id: string }) {
                               setError("");
                             }}
                           >
-                            Gỡ
+                            Xóa
                           </button>
                           {row.status !== "closed" && (
                             <button

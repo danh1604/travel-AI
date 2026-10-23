@@ -2,6 +2,7 @@ import { getDatabase } from "../config/database.js";
 import { createSavedPlanRepository } from "../trips/repository.js";
 import { createKnowledgeRepository } from "../rag/store.js";
 import { createReviewRepository } from "../reviews/repository.js";
+import { createTravelRepository } from "../travel/repository.js";
 import {
   createAccountAdminRepository,
   type AccountSql,
@@ -22,6 +23,7 @@ function connection(
 export function postgresAuthRepository(): AuthRepository {
   return {
     ...createReviewRepository({ query: <T>(sql: string, values: unknown[]) => connection(getDatabase()).query<T>(sql, values) }),
+    ...createTravelRepository({ query: <T>(sql: string, values: unknown[]) => connection(getDatabase()).query<T>(sql, values) }),
     ...createKnowledgeRepository({ query: <T>(sql: string, values: unknown[]) => connection(getDatabase()).query<T>(sql, values), transaction: (run) => getDatabase().$transaction((tx) => run(connection(tx))) }),
     ...createSavedPlanRepository({ query: <T>(sql: string, values: unknown[]) => connection(getDatabase()).query<T>(sql, values) }),
     ...createAccountAdminRepository({

@@ -1,6 +1,6 @@
 # Quản lý lịch khởi hành
 
-Vào `/admin/tours`, chọn **Lịch khởi hành**. Admin có thể thêm/sửa ngày đi/về, giá, số chỗ, mở/đóng nhận khách, đánh dấu hết chỗ và gỡ lịch có 0 khách. Local lưu trong bản làm việc hiện có, chưa cần Docker.
+Vào `/admin/tours`, chọn **Lịch khởi hành**. Admin có thể thêm/sửa ngày đi/về, giá, số chỗ, mở/đóng nhận khách, đánh dấu hết chỗ xóa lịch, và làm mới lịch cũ sang ngày mới. Local lưu trong bản làm việc hiện có, chưa cần Docker.
 
 ## Nhập và rà soát
 
@@ -11,7 +11,7 @@ Vào `/admin/tours`, chọn **Lịch khởi hành**. Admin có thể thêm/sửa
 
 Số khách đã đặt được cập nhật thủ công, chưa đồng bộ booking với MongoDB. Bản snapshot public cũ không có giá gốc và các số liệu chỗ: form để trống và yêu cầu bổ sung trước khi lưu. Không tự đoán bằng 0. PostgreSQL đọc các giá trị đã nhập từ TourDeparture. Xác nhận giá không xóa cờ needsReview chung của tour và nguồn.
 
-**Gỡ** chỉ cho lịch có số đã đặt xác định là 0, kèm nút xác nhận. Lịch có khách hoặc chưa rõ số khách cần giữ lại; dùng **Đóng nhận khách** để ngừng mở bán. PostgreSQL đánh dấu `deleted`, giữ bản ghi/dịch vụ nguồn để import create-only không khôi phục lịch đã gỡ. Local gỡ trong bản làm việc, giữ nguyên snapshot nguồn. Chưa có giao diện khôi phục lịch đã gỡ.
+**Xóa** (kèm nút xác nhận) luôn dùng được với lịch đã qua. Lịch sắp tới chỉ xóa được khi số đã đặt xác định là 0; nếu có khách hoặc chưa rõ số khách thì giữ lại và dùng **Đóng nhận khách** để ngừng mở bán. Nút **Xóa lịch đã qua** xóa cùng lúc mọi lịch đã qua của tour. PostgreSQL đánh dấu `deleted`, giữ bản ghi/dịch vụ nguồn để import create-only không khôi phục lịch đã gỡ. Local gỡ trong bản làm việc, giữ nguyên snapshot nguồn. Chưa có giao diện khôi phục lịch đã gỡ.
 
 Nút **Đóng nhận khách** ngay trong danh sách giữ nguyên giá và số liệu chỗ; có thể dùng khi lịch cũ chưa đủ metadata. Để mở lại qua form sửa, cần điền đầy đủ các trường hợp lệ.
 
@@ -33,7 +33,9 @@ Tất cả route yêu cầu Admin. POST/PATCH/DELETE dùng JSON, Origin khớp C
 | POST | `/api/admin/tours/:id/departures` | Tạo mới |
 | PATCH | `/api/admin/tours/:id/departures/:departureId` | Sửa lịch thuộc tour |
 | POST | `/api/admin/tours/:id/departures/:departureId/close` | Đóng nhận khách, giữ nguyên dữ liệu; body chỉ gồm revision |
-| DELETE | `/api/admin/tours/:id/departures/:departureId` | Gỡ lịch; body chỉ gồm revision |
+| DELETE | `/api/admin/tours/:id/departures/:departureId` | Xóa lịch; body chỉ gồm revision |
+| POST | `/api/admin/tours/:id/departures/archive-past` | Xóa mọi lịch đã qua; body chỉ gồm revision |
+| POST | `/api/admin/departures/refresh` | Làm mới lịch cũ: `{ startDate, gapDays, tourId?, dryRun }` |
 
 POST/PATCH nhận toàn bộ: `revision`, `startsAt`, `endsAt` (ISO UTC), `basePriceVnd`, `salePriceVnd` (chuỗi số), `minPeople`, `maxPeople`, `bookedPeople` (số nguyên), `status` (open/closed/full), `priceConfirmed` (boolean). Trường dư bị từ chối. Response trả lại danh sách và revision mới. Quy tắc giá xác nhận được kiểm tra ở API và database.
 
@@ -46,3 +48,7 @@ npm run test:database
 ```
 
 Kiểm thử: ngày/giá/chỗ, UTC+7, migration giữ giá thập phân cũ, giá thấp nhất, lịch quá hạn/đóng/hết chỗ, persistence, revision/ownership, trường riêng không bị lộ, Admin/Origin và gỡ lịch. Adapter PostgreSQL cần kiểm tra tích hợp khi có database thật. Chạy các bộ kiểm thử lần lượt khi ít RAM; có thể dừng dev server tạm thời. Cách chuyển cache/file tạm sang ổ H nằm trong [account-admin.md](account-admin.md).
+
+## Làm mới lịch cũ
+
+`POST /api/admin/departures/refresh` dời **toàn bộ** lịch đã qua của các tour đang hiển thị (hoặc một `tourId`) sang các ngày từ `startDate` trở đi, cách nhau `gapDays` ngày, theo đúng thứ tự cũ, giữ giờ đi, số ngày và giá. `dryRun: true` chỉ xem trước. Lịch đã qua chưa có khách được dời thẳng; lịch đã có khách giữ làm lịch sử và tạo thêm bản mới (đánh dấu để chạy lại không nhân bản). Mỗi tour tối đa 100 lịch cũ gần nhất cho một lần chạy.

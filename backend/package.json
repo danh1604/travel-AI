@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:travel": "node --import tsx --test --test-concurrency=1 tests/travel.test.ts",
+    "test:refresh": "node --import tsx --test --test-concurrency=1 tests/departure-refresh.test.ts",
     "test:reviews": "node --import tsx --test --test-concurrency=1 tests/reviews.test.ts",
     "dev": "npm run db:generate && tsx watch --include .env src/index.ts",
     "build": "npm run db:generate && tsc",
